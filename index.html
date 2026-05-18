@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polimix — Label Musical Virtuel</title>
+    <title>Polimix Record — Label Alternatif</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Inter : UI — Bebas Neue : titres musicaux — Share Tech Mono : écran LCD -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -14,8 +15,9 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        lcd: ['"Share Tech Mono"', 'monospace'],
+                        sans:  ['Inter', 'sans-serif'],
+                        bebas: ['"Bebas Neue"', 'sans-serif'],
+                        lcd:   ['"Share Tech Mono"', 'monospace'],
                     }
                 }
             }
@@ -24,233 +26,309 @@
 
     <style>
         :root {
-            --bg-deep:   #06060f;
-            --bg-panel:  #0a0a14;
-            --accent:    #7c3aed;
-            --accent-hi: #a78bfa;
-            --accent-glow: rgba(124, 58, 237, 0.35);
-            --lcd-green: #4ade80;
-            --card-bg:   rgba(255,255,255,0.04);
-            --card-border: rgba(255,255,255,0.08);
+            --bg-deep:     #06060f;
+            --bg-panel:    #0a0a14;
+            --accent:      #7c3aed;
+            --accent-hi:   #a78bfa;
+            --accent-glow: rgba(124,58,237,.35);
+            --lcd-green:   #4ade80;
+            --card-bg:     rgba(255,255,255,.04);
+            --card-border: rgba(255,255,255,.08);
         }
-
         *, *::before, *::after { box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-deep);
-            color: white;
-            overflow-x: hidden;
-        }
-
+        body { background-color: var(--bg-deep); color: white; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: var(--bg-deep); }
         ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
 
-        /* ── AURORA HERO ─────────────────────────────── */
-        @keyframes aurora {
-            0%   { transform: translate(0%,   0%)  scale(1);    opacity:.5; }
-            50%  { transform: translate(8%, -6%)   scale(1.1);  opacity:.8; }
-            100% { transform: translate(0%,   0%)  scale(1);    opacity:.5; }
+        /* ── LOGO INVERSION ──────────────────────── */
+        .logo-img {
+            filter: invert(1) drop-shadow(0 0 10px rgba(167,139,250,.5));
+            object-fit: contain;
         }
-        .aurora-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
+        .logo-sidebar {
+            width: 100%;
+            max-height: 180px;
+            display: block;
+            padding: 12px 16px 0;
         }
-        .aurora-1 { animation: aurora 18s ease-in-out infinite; }
-        .aurora-2 { animation: aurora 14s ease-in-out infinite reverse; }
-        .aurora-3 { animation: aurora 22s ease-in-out infinite 4s; }
 
-        /* ── TICKER ───────────────────────────────────── */
-        @keyframes ticker { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        /* ── AURORA ──────────────────────────────── */
+        @keyframes aurora {
+            0%   { transform:translate(0%,0%)   scale(1);   opacity:.5; }
+            50%  { transform:translate(8%,-6%)  scale(1.1); opacity:.8; }
+            100% { transform:translate(0%,0%)   scale(1);   opacity:.5; }
+        }
+        .aurora-blob { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+        .a1 { animation: aurora 18s ease-in-out infinite; }
+        .a2 { animation: aurora 14s ease-in-out infinite reverse; }
+        .a3 { animation: aurora 22s ease-in-out infinite 4s; }
+
+        /* ── TICKER ──────────────────────────────── */
+        @keyframes ticker { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
         .ticker-text { animation: ticker 22s linear infinite; white-space: nowrap; }
 
-        /* ── VISUALIZER BARS ─────────────────────────── */
-        @keyframes vbar1 { 0%,100%{height:20%} 50%{height:80%} }
-        @keyframes vbar2 { 0%,100%{height:45%} 50%{height:65%} }
-        @keyframes vbar3 { 0%,100%{height:65%} 50%{height:25%} }
-        @keyframes vbar4 { 0%,100%{height:30%} 50%{height:95%} }
-        @keyframes vbar5 { 0%,100%{height:75%} 50%{height:35%} }
-        @keyframes vbar6 { 0%,100%{height:15%} 50%{height:70%} }
-        @keyframes vbar7 { 0%,100%{height:55%} 50%{height:20%} }
-        @keyframes vbar8 { 0%,100%{height:35%} 50%{height:90%} }
-        @keyframes vbar9 { 0%,100%{height:60%} 50%{height:30%} }
-        @keyframes vbar10{ 0%,100%{height:25%} 50%{height:75%} }
-        @keyframes vbar11{ 0%,100%{height:50%} 50%{height:15%} }
-        @keyframes vbar12{ 0%,100%{height:40%} 50%{height:85%} }
-
-        .vbar {
-            width: 4px;
-            border-radius: 2px;
-            background: var(--accent-hi);
-            box-shadow: 0 0 6px var(--accent);
-            transform-origin: bottom;
-            flex-shrink: 0;
-        }
+        /* ── VISUALIZER ──────────────────────────── */
+        @keyframes vb1  { 0%,100%{height:20%} 50%{height:80%} }
+        @keyframes vb2  { 0%,100%{height:45%} 50%{height:65%} }
+        @keyframes vb3  { 0%,100%{height:65%} 50%{height:25%} }
+        @keyframes vb4  { 0%,100%{height:30%} 50%{height:95%} }
+        @keyframes vb5  { 0%,100%{height:75%} 50%{height:35%} }
+        @keyframes vb6  { 0%,100%{height:15%} 50%{height:70%} }
+        @keyframes vb7  { 0%,100%{height:55%} 50%{height:20%} }
+        @keyframes vb8  { 0%,100%{height:35%} 50%{height:90%} }
+        @keyframes vb9  { 0%,100%{height:60%} 50%{height:30%} }
+        @keyframes vb10 { 0%,100%{height:25%} 50%{height:75%} }
+        @keyframes vb11 { 0%,100%{height:50%} 50%{height:15%} }
+        @keyframes vb12 { 0%,100%{height:40%} 50%{height:85%} }
+        .vbar { width:4px; border-radius:2px; background:var(--accent-hi); box-shadow:0 0 6px var(--accent); transform-origin:bottom; flex-shrink:0; }
         .vbars { display:flex; align-items:flex-end; gap:4px; }
-        .vbar:nth-child(1)  { animation: vbar1  0.80s ease-in-out infinite; }
-        .vbar:nth-child(2)  { animation: vbar2  0.90s ease-in-out infinite; }
-        .vbar:nth-child(3)  { animation: vbar3  0.70s ease-in-out infinite; }
-        .vbar:nth-child(4)  { animation: vbar4  1.00s ease-in-out infinite; }
-        .vbar:nth-child(5)  { animation: vbar5  0.85s ease-in-out infinite; }
-        .vbar:nth-child(6)  { animation: vbar6  0.75s ease-in-out infinite; }
-        .vbar:nth-child(7)  { animation: vbar7  0.95s ease-in-out infinite; }
-        .vbar:nth-child(8)  { animation: vbar8  0.65s ease-in-out infinite; }
-        .vbar:nth-child(9)  { animation: vbar9  0.88s ease-in-out infinite; }
-        .vbar:nth-child(10) { animation: vbar10 0.72s ease-in-out infinite; }
-        .vbar:nth-child(11) { animation: vbar11 0.93s ease-in-out infinite; }
-        .vbar:nth-child(12) { animation: vbar12 0.67s ease-in-out infinite; }
+        .vbar:nth-child(1)  { animation:vb1  .80s ease-in-out infinite; }
+        .vbar:nth-child(2)  { animation:vb2  .90s ease-in-out infinite; }
+        .vbar:nth-child(3)  { animation:vb3  .70s ease-in-out infinite; }
+        .vbar:nth-child(4)  { animation:vb4  1.0s ease-in-out infinite; }
+        .vbar:nth-child(5)  { animation:vb5  .85s ease-in-out infinite; }
+        .vbar:nth-child(6)  { animation:vb6  .75s ease-in-out infinite; }
+        .vbar:nth-child(7)  { animation:vb7  .95s ease-in-out infinite; }
+        .vbar:nth-child(8)  { animation:vb8  .65s ease-in-out infinite; }
+        .vbar:nth-child(9)  { animation:vb9  .88s ease-in-out infinite; }
+        .vbar:nth-child(10) { animation:vb10 .72s ease-in-out infinite; }
+        .vbar:nth-child(11) { animation:vb11 .93s ease-in-out infinite; }
+        .vbar:nth-child(12) { animation:vb12 .67s ease-in-out infinite; }
+        .vbars.paused .vbar { animation-play-state:paused; }
 
-        /* Pause all bars when player is stopped */
-        .vbars.paused .vbar { animation-play-state: paused; }
-
-        /* ── GLASS CARD ───────────────────────────────── */
+        /* ── CARDS ───────────────────────────────── */
         .glass-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(12px);
-            transition: transform .3s ease, background .3s ease, box-shadow .3s ease, border-color .3s ease;
+            background:var(--card-bg); border:1px solid var(--card-border);
+            backdrop-filter:blur(12px);
+            transition:transform .3s, background .3s, box-shadow .3s, border-color .3s;
         }
         .glass-card:hover {
-            background: rgba(255,255,255,0.07);
-            border-color: rgba(167,139,250,0.35);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow);
+            background:rgba(255,255,255,.07); border-color:rgba(167,139,250,.35);
+            transform:translateY(-4px);
+            box-shadow:0 20px 40px rgba(0,0,0,.5), 0 0 20px var(--accent-glow);
         }
-        .music-card .play-overlay { opacity:0; transition: opacity .3s ease; }
+        .music-card .play-overlay { opacity:0; transition:opacity .3s; }
         .music-card:hover .play-overlay { opacity:1; }
 
-        /* ── NAV ──────────────────────────────────────── */
+        /* ── NAV ─────────────────────────────────── */
         .nav-item {
             display:flex; align-items:center; gap:12px;
             padding:10px 16px; border-radius:12px;
-            font-weight:500; transition: all .2s;
+            font-weight:500; transition:all .2s;
             color:#71717a; text-decoration:none;
         }
-        .nav-item:hover { background:rgba(255,255,255,0.05); color:white; }
-        .nav-item.active {
-            background: rgba(124,58,237,0.2); color:white;
-            border: 1px solid rgba(124,58,237,0.3);
-        }
+        .nav-item:hover { background:rgba(255,255,255,.05); color:white; }
+        .nav-item.active { background:rgba(124,58,237,.2); color:white; border:1px solid rgba(124,58,237,.3); }
 
-        /* ── GENRE CARD ───────────────────────────────── */
-        .genre-card {
-            position:relative; height:140px;
-            border-radius:20px; overflow:hidden; cursor:pointer;
-        }
-        .genre-card img { width:100%; height:100%; object-fit:cover; transition: transform .7s ease; }
+        /* ── GENRE CARD ──────────────────────────── */
+        .genre-card { position:relative; height:140px; border-radius:20px; overflow:hidden; cursor:pointer; }
+        .genre-card img { width:100%; height:100%; object-fit:cover; transition:transform .7s; }
         .genre-card:hover img { transform:scale(1.1); }
 
-        /* ── BRIDGE XIPINOW ───────────────────────────── */
+        /* ── BRIDGE ──────────────────────────────── */
         .bridge-card {
-            background: linear-gradient(135deg, rgba(124,58,237,.15), rgba(0,200,150,.08));
-            border: 1px solid rgba(124,58,237,.3);
-            border-radius:20px; padding:24px;
+            background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(0,200,150,.08));
+            border:1px solid rgba(124,58,237,.3); border-radius:20px; padding:24px;
             display:flex; align-items:center; gap:20px;
-            transition: all .3s ease; text-decoration:none;
+            transition:all .3s; text-decoration:none;
         }
-        .bridge-card:hover {
-            background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(0,200,150,.15));
-            transform:translateY(-2px);
+        .bridge-card:hover { background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(0,200,150,.15)); transform:translateY(-2px); }
+
+        /* ── QUI SOMMES-NOUS MODAL ───────────────── */
+        .modal-overlay {
+            position:fixed; inset:0; z-index:200;
+            background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
+            display:none; align-items:center; justify-content:center; padding:20px;
+        }
+        .modal-overlay.open { display:flex; }
+        .modal-box {
+            background:#0e0e1c; border:1px solid rgba(124,58,237,.4);
+            border-radius:24px; max-width:620px; width:100%; padding:36px;
+            position:relative;
+            box-shadow:0 40px 80px rgba(0,0,0,.8), 0 0 40px var(--accent-glow);
         }
 
-        /* ── THE POD ──────────────────────────────────── */
+        /* ── POD ─────────────────────────────────── */
         .pod {
-            background: linear-gradient(145deg, #ffffff 0%, #e6e6f2 100%);
-            box-shadow:
-                -8px -8px 20px rgba(255,255,255,.07),
-                20px 20px 40px rgba(0,0,0,.7),
-                inset -4px -4px 12px rgba(180,180,200,.4),
-                inset  4px  4px 12px rgba(255,255,255,.9);
-            border: 1px solid rgba(255,255,255,.5);
-            transition: all .5s cubic-bezier(.25,1,.5,1);
+            background:linear-gradient(145deg,#ffffff,#e6e6f2);
+            box-shadow:-8px -8px 20px rgba(255,255,255,.07), 20px 20px 40px rgba(0,0,0,.7),
+                inset -4px -4px 12px rgba(180,180,200,.4), inset 4px 4px 12px rgba(255,255,255,.9);
+            border:1px solid rgba(255,255,255,.5);
+            transition:all .5s cubic-bezier(.25,1,.5,1);
             z-index:50; border-radius:50px;
         }
-        .pod.minimized {
-            width:80px; height:100px;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            cursor:pointer;
-        }
-        .pod.minimized:hover {
-            transform: scale(1.05) translateY(-5px);
-            box-shadow: 0 25px 50px rgba(0,0,0,.8), inset -4px -4px 12px rgba(180,180,200,.4), inset 4px 4px 12px rgba(255,255,255,.9);
-        }
+        .pod.minimized { width:80px; height:100px; border-radius:50% 50% 50% 50%/60% 60% 40% 40%; cursor:pointer; }
+        .pod.minimized:hover { transform:scale(1.05) translateY(-5px); }
         .pod.expanded { width:340px; height:auto; border-radius:40px; padding:18px; }
 
-        /* ── LCD ──────────────────────────────────────── */
-        .lcd {
-            background:#030805; border-radius:12px;
-            box-shadow: inset 0 4px 15px rgba(0,0,0,1), 0 1px 1px rgba(255,255,255,.6);
-            position:relative; overflow:hidden;
-        }
+        /* ── LCD ─────────────────────────────────── */
+        .lcd { background:#030805; border-radius:12px; box-shadow:inset 0 4px 15px rgba(0,0,0,1), 0 1px 1px rgba(255,255,255,.6); position:relative; overflow:hidden; }
         .lcd::before {
             content:''; position:absolute; inset:0;
-            background:
-                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.3) 50%),
-                linear-gradient(90deg, rgba(255,0,0,.04), rgba(0,255,0,.02), rgba(0,0,255,.04));
-            background-size: 100% 4px, 6px 100%;
-            z-index:5; pointer-events:none;
+            background:linear-gradient(rgba(0,0,0,0) 50%,rgba(0,0,0,.3) 50%),
+                linear-gradient(90deg,rgba(255,0,0,.04),rgba(0,255,0,.02),rgba(0,0,255,.04));
+            background-size:100% 4px,6px 100%; z-index:5; pointer-events:none;
         }
-        .lcd::after {
-            content:''; position:absolute; inset:0;
-            background:radial-gradient(circle at 50% 15%, rgba(255,255,255,.12) 0%, transparent 60%);
-            z-index:10; pointer-events:none;
-        }
-        .lcd-text { color:var(--lcd-green); text-shadow:0 0 6px rgba(74,222,128,.7), 0 0 2px rgba(74,222,128,.5); }
+        .lcd::after { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.12) 0%,transparent 60%); z-index:10; pointer-events:none; }
+        .lcd-text { color:var(--lcd-green); text-shadow:0 0 6px rgba(74,222,128,.7),0 0 2px rgba(74,222,128,.5); }
 
-        /* ── POD BUTTONS ──────────────────────────────── */
+        /* ── POD BOUTONS ─────────────────────────── */
         .pod-btn {
-            background:#f0f0f8; color:#555;
-            border-radius:50%; border:none; cursor:pointer;
-            display:flex; align-items:center; justify-content:center;
-            width:42px; height:42px;
-            box-shadow: 4px 4px 8px rgba(0,0,0,.12), -4px -4px 8px rgba(255,255,255,.9), inset -1px -1px 3px rgba(0,0,0,.05);
-            transition: all .15s ease;
+            background:#f0f0f8; color:#555; border-radius:50%; border:none; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; width:38px; height:38px;
+            box-shadow:3px 3px 7px rgba(0,0,0,.12),-3px -3px 7px rgba(255,255,255,.9),inset -1px -1px 3px rgba(0,0,0,.05);
+            transition:all .15s; flex-shrink:0;
         }
-        .pod-btn:hover { color: var(--accent); }
-        .pod-btn:active {
-            box-shadow: inset 4px 4px 8px rgba(0,0,0,.12), inset -4px -4px 8px rgba(255,255,255,.9);
-            transform:scale(.95);
-        }
-        .pod-btn-lg { width:54px; height:54px; font-size:1.1rem; color:var(--accent) !important; }
-
-        /* toggle icon visibility for play/pause */
+        .pod-btn:hover { color:var(--accent); }
+        .pod-btn:active { box-shadow:inset 3px 3px 7px rgba(0,0,0,.12),inset -3px -3px 7px rgba(255,255,255,.9); transform:scale(.95); }
+        .pod-btn-lg { width:50px; height:50px; font-size:1.05rem; color:var(--accent) !important; }
+        .pod-btn-sm { width:30px; height:30px; font-size:.75rem; }
         .icon-hidden { display:none; }
+
+        /* ── DRAG HANDLE ─────────────────────────── */
+        .drag-handle {
+            cursor:grab; user-select:none;
+            display:flex; align-items:center; justify-content:space-between; gap:8px;
+        }
+        .drag-handle:active { cursor:grabbing; }
+        .grip { display:flex; flex-direction:column; gap:3px; padding:4px; }
+        .grip span { display:block; width:18px; height:2px; background:#ccc; border-radius:1px; }
+
+        /* ── PROGRESS BAR SEEKABLE ───────────────── */
+        .progress-track {
+            position:relative; height:6px; border-radius:3px; cursor:pointer;
+            background:#d8d8e8;
+            box-shadow:inset 1px 1px 3px rgba(0,0,0,.15);
+        }
+        .progress-fill {
+            position:absolute; top:0; left:0; height:100%; border-radius:3px;
+            background:linear-gradient(90deg,var(--accent),var(--accent-hi));
+            pointer-events:none; transition:width .1s linear;
+        }
+        .progress-thumb {
+            position:absolute; top:50%; width:14px; height:14px;
+            background:white; border:2px solid var(--accent); border-radius:50%;
+            transform:translate(-50%,-50%); pointer-events:none;
+            box-shadow:0 2px 6px rgba(0,0,0,.25);
+            transition:left .1s linear;
+        }
+
+        /* ── VOLUME SLIDER ───────────────────────── */
+        .vol-slider {
+            -webkit-appearance:none; appearance:none;
+            flex:1; height:4px; border-radius:2px; outline:none; cursor:pointer;
+            background:linear-gradient(90deg, var(--accent) 0%, var(--accent) 80%, #d0d0e0 80%);
+        }
+        .vol-slider::-webkit-slider-thumb {
+            -webkit-appearance:none; width:13px; height:13px;
+            border-radius:50%; background:white; cursor:pointer;
+            border:2px solid var(--accent);
+            box-shadow:1px 1px 4px rgba(0,0,0,.2);
+        }
+
+        /* ── POD ONGLET LATÉRAL (mode réduit) ────── */
+        .pod-tab {
+            position:fixed; right:0; top:50%; transform:translateY(-50%);
+            width:44px; border-radius:12px 0 0 12px;
+            background:linear-gradient(160deg,#ffffff,#e6e6f2);
+            box-shadow:-6px 0 20px rgba(0,0,0,.4), inset 3px 0 8px rgba(255,255,255,.8);
+            border:1px solid rgba(255,255,255,.5); border-right:none;
+            display:none; flex-direction:column; align-items:center;
+            padding:14px 0; gap:10px; cursor:pointer; z-index:51;
+            transition:all .3s ease;
+        }
+        .pod-tab:hover { width:52px; box-shadow:-8px 0 24px rgba(124,58,237,.3), inset 3px 0 8px rgba(255,255,255,.8); }
+        .tab-track-name {
+            writing-mode:vertical-rl; text-orientation:mixed;
+            font-size:9px; font-weight:700; color:#555; letter-spacing:.1em;
+            text-transform:uppercase; max-height:80px; overflow:hidden;
+            white-space:nowrap; text-overflow:ellipsis;
+        }
+        .tab-mini-bar {
+            width:4px; height:50px; border-radius:2px; overflow:hidden;
+            background:#e0e0ee; position:relative;
+        }
+        .tab-mini-fill {
+            position:absolute; bottom:0; left:0; right:0;
+            background:var(--accent); border-radius:2px;
+            transition:height .5s linear;
+        }
     </style>
 </head>
 <body class="flex h-screen antialiased">
 
-<!-- ════════════════════════════════════════════
-     SIDEBAR
-════════════════════════════════════════════ -->
+<!-- ══════════════════ MODAL QUI SOMMES-NOUS ══════════════════ -->
+<div id="modal-about" class="modal-overlay" onclick="closeAbout(event)">
+    <div class="modal-box">
+        <button onclick="closeAbout()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition" aria-label="Fermer">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <div class="flex items-center gap-4 mb-6">
+            <img src="assets/logo-polimix.png" class="logo-img" style="width:56px;height:56px;" alt="Polimix Record">
+            <div>
+                <h2 class="font-bebas text-4xl tracking-wider leading-none">POLIMIX RECORD</h2>
+                <p class="text-xs tracking-widest uppercase mt-1" style="color:var(--accent-hi);">Label Alternatif</p>
+            </div>
+        </div>
+
+        <div class="space-y-4 text-zinc-300 text-sm leading-relaxed">
+            <p>
+                <strong class="text-white">Polimix Record</strong> est un label alternatif fondé par <strong class="text-white">Xipilom</strong>,
+                à la croisée de la création humaine et de l'intelligence artificielle.
+            </p>
+            <p>
+                Chaque artiste du catalogue est une <strong class="text-white">entité sonore construite</strong> à partir d'un musicien ou
+                créateur réel — son univers, ses influences, sa sensibilité. L'IA ne remplace pas l'humain :
+                elle l'amplifie, l'explore, lui donne une nouvelle voix.
+            </p>
+            <p>
+                Polimix ne connaît pas de frontières de style ni de format. Synthwave, électro, acoustique,
+                ambiant — tout coexiste ici, porté par une même conviction : <em>la musique de demain
+                s'écrit aujourd'hui, à plusieurs mains, humaines et algorithmiques.</em>
+            </p>
+            <div class="pt-2 border-t border-zinc-800 flex items-center gap-3">
+                <i class="fa-solid fa-skull text-zinc-500"></i>
+                <p class="text-zinc-500 text-xs">Polimix Record — fondé par Xipilom · xipinow.com</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
 <aside class="w-60 hidden md:flex flex-col border-r flex-shrink-0"
        style="background:var(--bg-panel); border-color:rgba(255,255,255,.06);">
 
-    <!-- Logo — REMPLACER LE SVG PAR LE LOGO VECTORISÉ RÉEL -->
-    <div class="p-6 flex items-center gap-3">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo Polimix">
-            <circle cx="18" cy="18" r="17" stroke="#7c3aed" stroke-width="1.5"/>
-            <circle cx="18" cy="18" r="9"  fill="#7c3aed" opacity=".25"/>
-            <polygon points="14,11 14,25 26,18" fill="#a78bfa"/>
-            <circle cx="18" cy="18" r="3"  fill="#06060f"/>
-        </svg>
-        <div>
-            <h1 class="text-xl font-black tracking-tighter leading-none">POLIMIX</h1>
-            <p class="text-[9px] tracking-widest uppercase" style="color:var(--accent-hi);">Label Virtuel</p>
+    <!-- Logo pleine largeur -->
+    <div class="border-b" style="border-color:rgba(255,255,255,.06);">
+        <img src="assets/logo-polimix.png" class="logo-img logo-sidebar" alt="Polimix Record">
+        <div class="text-center pb-3 mt-1">
+            <h1 class="font-bebas text-4xl tracking-widest leading-none">POLIMIX</h1>
+            <p class="text-[9px] tracking-widest uppercase" style="color:var(--accent-hi);">Record</p>
         </div>
     </div>
 
-    <nav class="flex-1 px-3 space-y-1 mt-2">
+    <nav class="flex-1 px-3 space-y-1 mt-3">
         <a href="#" class="nav-item active"><i class="fa-solid fa-house w-4 text-center"></i>Accueil</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-fire w-4 text-center"></i>Nouveautés</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-compact-disc w-4 text-center"></i>Genres</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-robot w-4 text-center"></i>Entités Virtuelles</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-users w-4 text-center"></i>Artistes</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-waveform-lines w-4 text-center"></i>Visualiseur</a>
     </nav>
 
+    <!-- Bouton Qui sommes-nous -->
+    <div class="px-3 mb-3">
+        <button onclick="openAbout()"
+                class="w-full py-3 rounded-2xl font-semibold text-sm transition flex items-center justify-center gap-2"
+                style="background:rgba(124,58,237,.2); border:1px solid rgba(124,58,237,.4); color:var(--accent-hi);">
+            <i class="fa-solid fa-skull text-xs"></i>
+            Qui sommes-nous ?
+        </button>
+    </div>
+
     <!-- Lien écosystème -->
-    <div class="p-3 m-3 rounded-2xl" style="background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.2);">
+    <div class="p-3 mx-3 rounded-2xl" style="background:rgba(124,58,237,.08); border:1px solid rgba(124,58,237,.18);">
         <p class="text-xs font-semibold mb-2" style="color:var(--accent-hi);">Écosystème Xipinow</p>
         <a href="https://xipinocode.xipinow.com" target="_blank" rel="noopener"
            class="text-xs text-zinc-400 hover:text-white transition flex items-center gap-2">
@@ -260,70 +338,81 @@
         </a>
     </div>
 
-    <div class="px-4 pb-4 mx-3 mb-1 rounded-2xl" style="background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);">
-        <p class="text-xs font-bold text-white mt-3 mb-1">Maison d'Édition Alternative</p>
+    <div class="px-4 py-3 mx-3 mb-3 mt-2 rounded-2xl" style="background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);">
+        <p class="text-xs font-bold text-white mb-1">Label Alternatif</p>
         <p class="text-[10px] text-zinc-500 leading-relaxed">Création IA × Âme humaine</p>
     </div>
 </aside>
 
-<!-- ════════════════════════════════════════════
-     MAIN
-════════════════════════════════════════════ -->
+<!-- ══════════════════ MAIN ══════════════════ -->
 <main class="flex-1 overflow-y-auto pb-40 min-w-0">
 
     <!-- Mobile header -->
     <header class="md:hidden p-4 flex items-center justify-between sticky top-0 z-40"
             style="background:rgba(6,6,15,.92); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,.06);">
         <div class="flex items-center gap-2">
-            <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
-                <circle cx="18" cy="18" r="17" stroke="#7c3aed" stroke-width="1.5"/>
-                <polygon points="14,11 14,25 26,18" fill="#a78bfa"/>
-            </svg>
-            <h1 class="text-lg font-black tracking-tighter">POLIMIX</h1>
+            <img src="assets/logo-polimix.png" class="logo-img" style="width:36px;height:36px;" alt="Logo">
+            <h1 class="font-bebas text-2xl tracking-widest">POLIMIX</h1>
         </div>
-        <button class="text-zinc-400 p-2" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+        <div class="flex items-center gap-3">
+            <button onclick="openAbout()" class="text-xs px-3 py-1.5 rounded-full font-semibold transition"
+                    style="background:rgba(124,58,237,.25); border:1px solid rgba(124,58,237,.4); color:var(--accent-hi);">
+                Qui sommes-nous ?
+            </button>
+            <button class="text-zinc-400 p-2" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+        </div>
     </header>
 
-    <!-- ── HERO ───────────────────────────────── -->
+    <!-- ── HERO ───────────────────────────── -->
     <div class="relative overflow-hidden" style="min-height:340px;">
-        <div class="aurora-blob aurora-1 w-96 h-96" style="background:rgba(124,58,237,.55); top:-120px; left:-60px;"></div>
-        <div class="aurora-blob aurora-2 w-72 h-72" style="background:rgba(0,200,220,.18); top:20px; right:80px;"></div>
-        <div class="aurora-blob aurora-3 w-64 h-64" style="background:rgba(220,0,160,.18); bottom:-60px; right:-40px;"></div>
+        <div class="aurora-blob a1 w-96 h-96" style="background:rgba(124,58,237,.55); top:-120px; left:-60px;"></div>
+        <div class="aurora-blob a2 w-72 h-72" style="background:rgba(0,200,220,.18); top:20px; right:80px;"></div>
+        <div class="aurora-blob a3 w-64 h-64" style="background:rgba(220,0,160,.18); bottom:-60px; right:-40px;"></div>
         <div class="absolute inset-0 opacity-5"
              style="background:url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop') center/cover;"></div>
 
         <div class="relative z-10 p-8 md:p-12 flex flex-col justify-end" style="min-height:340px;">
             <span class="mb-3 inline-block px-3 py-1 text-[10px] font-black tracking-widest uppercase rounded-full"
                   style="background:rgba(124,58,237,.3); border:1px solid rgba(167,139,250,.4); color:var(--accent-hi);">
-                Label Musical Virtuel
+                Label Alternatif
             </span>
-            <h2 class="text-4xl md:text-6xl font-black mb-3 leading-none">
-                La Fusion de<br>
+            <h2 class="font-bebas text-6xl md:text-8xl mb-3 leading-none tracking-wider">
+                LA MUSIQUE<br>
                 <span style="background:linear-gradient(90deg,#a78bfa,#38bdf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
-                    l'Humain &amp; du Virtuel
+                    SANS FRONTIÈRES
                 </span>
             </h2>
             <p class="text-zinc-400 max-w-lg text-sm md:text-base">
-                Chaque artiste virtuel IA de Polimix est l'écho d'un créateur humain.<br>
-                Catalogue hybride, création inédite.
+                Chaque artiste Polimix est né d'un créateur réel.<br>
+                Humain à l'origine, libre dans sa forme.
             </p>
-            <div class="mt-6 overflow-hidden rounded-full py-2"
+
+            <div class="mt-5 flex items-center gap-3">
+                <button onclick="openAbout()"
+                        class="px-5 py-2.5 rounded-full font-semibold text-sm transition flex items-center gap-2"
+                        style="background:rgba(124,58,237,.35); border:1px solid rgba(167,139,250,.5); color:white;">
+                    <i class="fa-solid fa-skull text-xs"></i>
+                    Qui sommes-nous ?
+                </button>
+            </div>
+
+            <div class="mt-5 overflow-hidden rounded-full py-2"
                  style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); max-width:520px;">
                 <p class="ticker-text text-[11px] text-zinc-500 font-lcd tracking-widest">
-                    &nbsp;▶ NEON PULSE — V-SYNAPSE &nbsp;▶ ACOUSTIC DREAMS — LUMINA_AI &nbsp;▶ CYBERNETIC SOUL — UNIT-7 &nbsp;▶ DIGITAL RAIN — ORACLE-X &nbsp;▶ POLIMIX © 2025 &nbsp;&nbsp;
+                    &nbsp;▶ NEON PULSE — V-SYNAPSE &nbsp;▶ ACOUSTIC DREAMS — LUMINA &nbsp;▶ CYBERNETIC SOUL — UNIT-7 &nbsp;▶ DIGITAL RAIN — ORACLE-X &nbsp;▶ POLIMIX RECORD © 2025 &nbsp;&nbsp;
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- ── CONTENT ────────────────────────────── -->
+    <!-- ── CONTENT ────────────────────────── -->
     <div class="p-6 md:p-8 space-y-14">
 
         <!-- Nouveautés -->
         <section>
             <div class="flex items-end justify-between mb-5">
                 <div>
-                    <h3 class="text-xl font-bold text-white">Dernières Nouveautés</h3>
+                    <h3 class="font-bebas text-3xl tracking-wider text-white">Dernières Sorties</h3>
                     <p class="text-zinc-500 text-xs mt-1">Tous styles confondus</p>
                 </div>
                 <button class="text-xs font-semibold transition" style="color:var(--accent-hi);">Tout voir →</button>
@@ -331,6 +420,7 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
 
+                <!-- Carte artiste : titre + artiste + origine réelle -->
                 <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
                      onclick="playTrack('Neon Pulse','V-Synapse','03:42')">
                     <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
@@ -344,14 +434,12 @@
                         </div>
                     </div>
                     <h4 class="font-bold text-white text-sm truncate">Neon Pulse</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">
-                        <i class="fa-solid fa-robot text-[9px] mr-1"></i>V-Synapse
-                    </p>
-                    <p class="text-[10px] text-zinc-600 truncate">Humain : Alex R.</p>
+                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">V-Synapse</p>
+                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : Daft Punk</p>
                 </div>
 
                 <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
-                     onclick="playTrack('Acoustic Dreams','Lumina_AI','04:15')">
+                     onclick="playTrack('Acoustic Dreams','Lumina','04:15')">
                     <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
                         <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop"
                              class="w-full h-full object-cover" alt="Acoustic Dreams" loading="lazy">
@@ -363,10 +451,8 @@
                         </div>
                     </div>
                     <h4 class="font-bold text-white text-sm truncate">Acoustic Dreams</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">
-                        <i class="fa-solid fa-robot text-[9px] mr-1"></i>Lumina_AI
-                    </p>
-                    <p class="text-[10px] text-zinc-600 truncate">Humain : Sarah J.</p>
+                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">Lumina</p>
+                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : Sarah J.</p>
                 </div>
 
                 <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
@@ -382,10 +468,8 @@
                         </div>
                     </div>
                     <h4 class="font-bold text-white text-sm truncate">Cybernetic Soul</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">
-                        <i class="fa-solid fa-robot text-[9px] mr-1"></i>Unit-7
-                    </p>
-                    <p class="text-[10px] text-zinc-600 truncate">Collectif : The Roots</p>
+                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">Unit-7</p>
+                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : The Roots</p>
                 </div>
 
                 <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
@@ -401,10 +485,8 @@
                         </div>
                     </div>
                     <h4 class="font-bold text-white text-sm truncate">Digital Rain</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">
-                        <i class="fa-solid fa-robot text-[9px] mr-1"></i>Oracle-X
-                    </p>
-                    <p class="text-[10px] text-zinc-600 truncate">Humain : M. Dubois</p>
+                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">Oracle-X</p>
+                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : M. Dubois</p>
                 </div>
 
                 <div class="hidden lg:block music-card glass-card rounded-2xl p-3 cursor-pointer"
@@ -420,36 +502,26 @@
                         </div>
                     </div>
                     <h4 class="font-bold text-white text-sm truncate">Echoes of Tomorrow</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">
-                        <i class="fa-solid fa-robot text-[9px] mr-1"></i>V-Synapse
-                    </p>
-                    <p class="text-[10px] text-zinc-600 truncate">Humain : Alex R.</p>
+                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">V-Synapse</p>
+                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : Alex R.</p>
                 </div>
 
             </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════════
-             EMPLACEMENT VISUALISEUR — remplacer le contenu de #viz-slot
-             par l'iframe ou le script du module Pinokio/app quand prêt.
-             Pour intégrer : supprimer la div.viz-placeholder et coller
-             votre code ici. L'ID #viz-slot et la hauteur sont conservés.
-        ══════════════════════════════════════════════════════════════ -->
+        <!-- EMPLACEMENT VISUALISEUR — remplacer #viz-slot quand le module est prêt -->
         <section>
             <div class="flex items-end justify-between mb-5">
                 <div>
-                    <h3 class="text-xl font-bold text-white">Visualiseur Audio</h3>
+                    <h3 class="font-bebas text-3xl tracking-wider text-white">Visualiseur Audio</h3>
                     <p class="text-zinc-500 text-xs mt-1">Module interactif — bientôt disponible</p>
                 </div>
                 <span class="text-[10px] px-2 py-1 rounded-full font-bold tracking-wider"
-                      style="background:rgba(255,180,0,.12); border:1px solid rgba(255,180,0,.3); color:#fbbf24;">
-                    BIENTÔT
-                </span>
+                      style="background:rgba(255,180,0,.12); border:1px solid rgba(255,180,0,.3); color:#fbbf24;">BIENTÔT</span>
             </div>
-
             <div id="viz-slot" class="rounded-2xl overflow-hidden flex items-center justify-center"
                  style="height:200px; background:linear-gradient(135deg,rgba(124,58,237,.09),rgba(0,200,200,.05)); border:1px dashed rgba(124,58,237,.3);">
-                <div class="viz-placeholder flex flex-col items-center gap-4">
+                <div class="flex flex-col items-center gap-4">
                     <div class="vbars" style="height:48px;">
                         <div class="vbar" style="height:40%;"></div>
                         <div class="vbar" style="height:60%;"></div>
@@ -473,36 +545,33 @@
         <section>
             <div class="flex items-end justify-between mb-5">
                 <div>
-                    <h3 class="text-xl font-bold text-white">Par Genre</h3>
-                    <p class="text-zinc-500 text-xs mt-1">Explorez les univers de nos IA</p>
+                    <h3 class="font-bebas text-3xl tracking-wider text-white">Par Genre</h3>
+                    <p class="text-zinc-500 text-xs mt-1">Explorez nos univers</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="genre-card group">
-                    <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=600&auto=format&fit=crop"
-                         alt="Synthwave" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=600&auto=format&fit=crop" alt="Synthwave" loading="lazy">
                     <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent);"></div>
                     <div class="absolute bottom-0 left-0 p-4">
-                        <h4 class="text-lg font-bold text-white">Synthwave / Cyberpunk</h4>
-                        <p class="text-xs text-zinc-400">5 Artistes Virtuels</p>
+                        <h4 class="font-bebas text-2xl tracking-wider text-white">Synthwave / Cyberpunk</h4>
+                        <p class="text-xs text-zinc-400">5 Artistes</p>
                     </div>
                 </div>
                 <div class="genre-card group">
-                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
-                         alt="Électro" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop" alt="Électro" loading="lazy">
                     <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent);"></div>
                     <div class="absolute bottom-0 left-0 p-4">
-                        <h4 class="text-lg font-bold text-white">Électro / House</h4>
-                        <p class="text-xs text-zinc-400">12 Artistes Virtuels</p>
+                        <h4 class="font-bebas text-2xl tracking-wider text-white">Électro / House</h4>
+                        <p class="text-xs text-zinc-400">12 Artistes</p>
                     </div>
                 </div>
                 <div class="genre-card group">
-                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop"
-                         alt="Ambiant" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop" alt="Ambiant" loading="lazy">
                     <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent);"></div>
                     <div class="absolute bottom-0 left-0 p-4">
-                        <h4 class="text-lg font-bold text-white">Ambiant / Chill</h4>
-                        <p class="text-xs text-zinc-400">3 Artistes Virtuels</p>
+                        <h4 class="font-bebas text-2xl tracking-wider text-white">Ambiant / Chill</h4>
+                        <p class="text-xs text-zinc-400">3 Artistes</p>
                     </div>
                 </div>
             </div>
@@ -517,199 +586,333 @@
                 </div>
                 <div class="flex-1">
                     <p class="text-xs font-semibold tracking-wider uppercase mb-1" style="color:var(--accent-hi);">Écosystème Xipinow</p>
-                    <h4 class="text-white font-bold text-lg leading-tight">Découvrir XiPiNOCODE</h4>
+                    <h4 class="font-bebas text-2xl tracking-wider text-white leading-tight">Découvrir XiPiNOCODE</h4>
                     <p class="text-zinc-500 text-sm mt-1">Applications gratuites, outils IA, catalogue Bruno Molinari</p>
                 </div>
                 <i class="fa-solid fa-arrow-right text-lg flex-shrink-0" style="color:var(--accent-hi);"></i>
             </a>
         </section>
 
-    </div><!-- /content -->
+    </div>
 </main>
 
-<!-- ════════════════════════════════════════════
-     THE POD — lecteur flottant
-════════════════════════════════════════════ -->
-<div id="polimix-pod" class="pod expanded fixed bottom-6 right-6 md:bottom-8 md:right-8 flex flex-col" style="gap:12px;">
+<!-- ══════════════════ ONGLET LATÉRAL (mode réduit) ══════════════════ -->
+<div id="pod-tab" class="pod-tab" onclick="expandPod()" title="Ouvrir le lecteur">
+    <div id="tab-led" class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#ef4444; box-shadow:0 0 6px red;"></div>
+    <i class="fa-solid fa-skull text-zinc-400 text-base"></i>
+    <div class="tab-track-name" id="tab-title">POLIMIX</div>
+    <div class="tab-mini-bar">
+        <div id="tab-fill" class="tab-mini-fill" style="height:0%;"></div>
+    </div>
+</div>
 
-    <!-- En-tête pod -->
-    <div id="pod-header" class="flex justify-between items-center">
+<!-- ══════════════════ POD LECTEUR ══════════════════ -->
+<div id="polimix-pod" class="pod expanded fixed flex flex-col"
+     style="width:320px; bottom:24px; right:24px; padding:16px; gap:10px; z-index:50;">
+
+    <!-- Poignée de déplacement -->
+    <div id="drag-handle" class="drag-handle">
         <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-full flex items-center justify-center"
-                 style="background:#f0f0f8; box-shadow:inset 1px 1px 3px rgba(0,0,0,.1);">
+            <div class="grip"><span></span><span></span><span></span></div>
+            <div class="flex items-center gap-1.5">
                 <div id="pod-led" class="w-2 h-2 rounded-full" style="background:#ef4444; box-shadow:0 0 5px red;"></div>
+                <span class="text-[9px] font-lcd text-gray-400 tracking-widest uppercase">Polimix Pod</span>
             </div>
-            <span class="text-[9px] font-lcd text-gray-400 tracking-widest uppercase">Polimix Pod</span>
         </div>
-        <button onclick="togglePod()" class="pod-btn" style="width:28px;height:28px;" aria-label="Réduire le pod">
-            <i id="icon-minus" class="fa-solid fa-minus text-xs"></i>
-            <i id="icon-expand" class="fa-solid fa-expand text-xs icon-hidden"></i>
+        <button onclick="minimizePod()" class="pod-btn pod-btn-sm" title="Réduire" aria-label="Réduire en onglet">
+            <i class="fa-solid fa-minus text-xs"></i>
         </button>
     </div>
 
-    <!-- Écran LCD -->
-    <div id="pod-screen" class="lcd p-3" style="height:94px;">
+    <!-- Écran LCD : titre + artiste + viz -->
+    <div class="lcd p-3" style="height:80px;">
         <div class="relative z-20 h-full flex flex-col justify-between font-lcd">
             <div class="flex justify-between items-start">
                 <div class="flex-1 mr-2 overflow-hidden">
                     <div class="text-[9px] font-bold tracking-widest uppercase" style="color:#166534;">Now Playing</div>
-                    <div id="lcd-title"  class="lcd-text text-sm uppercase tracking-wider truncate mt-0.5">EN ATTENTE...</div>
-                    <div id="lcd-artist" class="lcd-text text-[11px] opacity-70 truncate">SELECT TRACK</div>
+                    <div id="lcd-title" class="lcd-text text-sm uppercase tracking-wider truncate mt-0.5">EN ATTENTE...</div>
+                    <div id="lcd-artist" class="lcd-text text-[10px] opacity-70 truncate">SELECT TRACK</div>
                 </div>
-                <div id="lcd-time" class="lcd-text text-sm flex-shrink-0">00:00</div>
+                <div class="text-right flex-shrink-0">
+                    <div id="lcd-time"  class="lcd-text text-sm leading-none">00:00</div>
+                    <div id="lcd-total" class="lcd-text text-[9px] opacity-50 mt-0.5">00:00</div>
+                </div>
             </div>
-            <!-- Barres visualiseur mini + barre de progression -->
-            <div class="flex items-end gap-1">
-                <div id="pod-viz" class="vbars paused" style="height:18px;gap:2px;">
-                    <div class="vbar" style="width:2px;height:40%;"></div>
-                    <div class="vbar" style="width:2px;height:70%;"></div>
-                    <div class="vbar" style="width:2px;height:30%;"></div>
-                    <div class="vbar" style="width:2px;height:90%;"></div>
-                    <div class="vbar" style="width:2px;height:50%;"></div>
-                    <div class="vbar" style="width:2px;height:65%;"></div>
-                    <div class="vbar" style="width:2px;height:20%;"></div>
-                    <div class="vbar" style="width:2px;height:80%;"></div>
-                </div>
-                <div class="flex-1 h-1 rounded ml-1" style="background:rgba(74,222,128,.2);">
-                    <div id="lcd-progress" class="h-full rounded" style="width:0%; background:var(--lcd-green); box-shadow:0 0 5px var(--lcd-green);"></div>
-                </div>
+            <!-- Barres visualiseur mini -->
+            <div id="pod-viz" class="vbars paused" style="height:16px; gap:2px;">
+                <div class="vbar" style="width:2px;height:40%;"></div>
+                <div class="vbar" style="width:2px;height:70%;"></div>
+                <div class="vbar" style="width:2px;height:30%;"></div>
+                <div class="vbar" style="width:2px;height:90%;"></div>
+                <div class="vbar" style="width:2px;height:55%;"></div>
+                <div class="vbar" style="width:2px;height:65%;"></div>
+                <div class="vbar" style="width:2px;height:20%;"></div>
+                <div class="vbar" style="width:2px;height:80%;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Contrôles -->
-    <div id="pod-controls" class="flex justify-center items-center gap-3">
-        <button class="pod-btn" title="Télécharger (simulation)">
-            <i class="fa-solid fa-cloud-arrow-down text-sm text-zinc-400"></i>
+    <!-- Barre de transport (seekable) -->
+    <div>
+        <div id="progress-track" class="progress-track">
+            <div id="progress-fill" class="progress-fill" style="width:0%;"></div>
+            <div id="progress-thumb" class="progress-thumb" style="left:0%;"></div>
+        </div>
+        <div class="flex justify-between mt-1" style="font-size:10px; color:#888;">
+            <span id="time-current">0:00</span>
+            <span id="time-total">0:00</span>
+        </div>
+    </div>
+
+    <!-- Contrôles principaux -->
+    <div class="flex justify-center items-center gap-2">
+        <button id="btn-shuffle" class="pod-btn pod-btn-sm" title="Aléatoire" onclick="toggleShuffle()">
+            <i id="icon-shuffle" class="fa-solid fa-shuffle" style="font-size:.7rem; color:#aaa;"></i>
         </button>
-        <button class="pod-btn" aria-label="Précédent">
-            <i class="fa-solid fa-backward-step text-sm"></i>
+        <button class="pod-btn" aria-label="Précédent" onclick="prevTrack()">
+            <i class="fa-solid fa-backward-step"></i>
         </button>
-        <button id="play-btn" onclick="togglePlay()" class="pod-btn pod-btn-lg" aria-label="Lecture / Pause">
-            <i id="icon-play"  class="fa-solid fa-play  ml-1"></i>
+        <button onclick="togglePlay()" class="pod-btn pod-btn-lg" aria-label="Lecture / Pause">
+            <i id="icon-play"  class="fa-solid fa-play  ml-0.5"></i>
             <i id="icon-pause" class="fa-solid fa-pause icon-hidden"></i>
         </button>
-        <button class="pod-btn" aria-label="Suivant">
-            <i class="fa-solid fa-forward-step text-sm"></i>
+        <button class="pod-btn" aria-label="Suivant" onclick="nextTrack()">
+            <i class="fa-solid fa-forward-step"></i>
         </button>
-        <button class="pod-btn" title="Ouvrir sur plateformes">
-            <i class="fa-solid fa-arrow-up-right-from-square text-sm text-zinc-400"></i>
+        <button id="btn-repeat" class="pod-btn pod-btn-sm" title="Répéter" onclick="toggleRepeat()">
+            <i id="icon-repeat" class="fa-solid fa-repeat" style="font-size:.7rem; color:#aaa;"></i>
         </button>
     </div>
 
-    <!-- Contenu version minimisée (œuf) -->
-    <div id="pod-mini" class="hidden w-full h-full flex-col items-center justify-center relative">
-        <div id="pod-mini-led" class="absolute top-4 w-2 h-2 rounded-full" style="background:#ef4444; box-shadow:0 0 8px red;"></div>
-        <i class="fa-solid fa-music text-zinc-400 text-xl mt-2"></i>
-        <div class="mt-3 w-10 h-1 rounded-full overflow-hidden" style="background:#d0d0e0;">
-            <div id="mini-progress" class="h-full" style="width:0%; background:var(--accent);"></div>
-        </div>
+    <!-- Volume -->
+    <div class="flex items-center gap-2 px-1">
+        <button onclick="toggleMute()" class="pod-btn pod-btn-sm" aria-label="Mute">
+            <i id="icon-vol" class="fa-solid fa-volume-low" style="font-size:.7rem;"></i>
+        </button>
+        <input id="vol-slider" type="range" class="vol-slider" min="0" max="100" value="80"
+               oninput="updateVolume(this.value)" aria-label="Volume">
+        <span id="vol-label" class="text-[10px] font-lcd" style="color:#888; min-width:26px; text-align:right;">80</span>
+    </div>
+
+    <!-- Contrôles secondaires -->
+    <div class="flex justify-between items-center px-1 pt-1"
+         style="border-top:1px solid rgba(0,0,0,.06);">
+        <button class="pod-btn pod-btn-sm" title="Télécharger">
+            <i class="fa-solid fa-cloud-arrow-down" style="font-size:.7rem; color:#aaa;"></i>
+        </button>
+        <button class="pod-btn pod-btn-sm" title="Ouvrir sur plateformes">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.7rem; color:#aaa;"></i>
+        </button>
+        <button class="pod-btn pod-btn-sm" title="File d'attente">
+            <i class="fa-solid fa-list-ul" style="font-size:.7rem; color:#aaa;"></i>
+        </button>
+        <button class="pod-btn pod-btn-sm" title="Partager">
+            <i class="fa-solid fa-share-nodes" style="font-size:.7rem; color:#aaa;"></i>
+        </button>
     </div>
 </div>
 
 <script>
-    /* ── STATE ─────────────────────────────────── */
-    let expanded = true, playing = false;
-    let elapsed = 0, total = 0, ticker;
+    /* ════════════ STATE ════════════ */
+    let playing=false, elapsed=0, total=0, ticker;
+    let shuffleOn=false, repeatOn=false, muted=false, volume=80;
+    let isSeeking=false, isDragging=false, dragOX=0, dragOY=0;
+    const playlist = [];
+    let playlistIdx = 0;
 
-    /* ── DOM REFS ──────────────────────────────── */
+    /* ════════════ DOM ════════════ */
     const pod          = document.getElementById('polimix-pod');
-    const podHeader    = document.getElementById('pod-header');
-    const podScreen    = document.getElementById('pod-screen');
-    const podControls  = document.getElementById('pod-controls');
-    const podMini      = document.getElementById('pod-mini');
+    const podTab       = document.getElementById('pod-tab');
+    const dragHandle   = document.getElementById('drag-handle');
     const podViz       = document.getElementById('pod-viz');
     const podLed       = document.getElementById('pod-led');
-    const podMiniLed   = document.getElementById('pod-mini-led');
+    const tabLed       = document.getElementById('tab-led');
+    const tabTitle     = document.getElementById('tab-title');
+    const tabFill      = document.getElementById('tab-fill');
     const lcdTitle     = document.getElementById('lcd-title');
     const lcdArtist    = document.getElementById('lcd-artist');
     const lcdTime      = document.getElementById('lcd-time');
-    const lcdProgress  = document.getElementById('lcd-progress');
-    const miniProgress = document.getElementById('mini-progress');
-    const iconMinus    = document.getElementById('icon-minus');
-    const iconExpand   = document.getElementById('icon-expand');
+    const lcdTotal     = document.getElementById('lcd-total');
+    const timeCurrent  = document.getElementById('time-current');
+    const timeTotal    = document.getElementById('time-total');
+    const progressTrack= document.getElementById('progress-track');
+    const progressFill = document.getElementById('progress-fill');
+    const progressThumb= document.getElementById('progress-thumb');
     const iconPlay     = document.getElementById('icon-play');
     const iconPause    = document.getElementById('icon-pause');
+    const volSlider    = document.getElementById('vol-slider');
+    const volLabel     = document.getElementById('vol-label');
+    const iconVol      = document.getElementById('icon-vol');
 
-    /* ── TOGGLE POD SIZE ───────────────────────── */
-    function togglePod() {
-        expanded = !expanded;
-        if (expanded) {
-            pod.classList.replace('minimized','expanded');
-            [podHeader, podScreen, podControls].forEach(el => el.style.display = '');
-            podMini.style.display = 'none';
-            podMini.classList.add('hidden');
-            iconMinus.classList.remove('icon-hidden');
-            iconExpand.classList.add('icon-hidden');
-            pod.onclick = null;
-        } else {
-            pod.classList.replace('expanded','minimized');
-            [podHeader, podScreen, podControls].forEach(el => el.style.display = 'none');
-            podMini.style.display = 'flex';
-            podMini.classList.remove('hidden');
-            iconMinus.classList.add('icon-hidden');
-            iconExpand.classList.remove('icon-hidden');
-            setTimeout(() => { pod.onclick = togglePod; }, 120);
-        }
+    /* ════════════ MODAL ════════════ */
+    function openAbout()  { document.getElementById('modal-about').classList.add('open'); }
+    function closeAbout(e) {
+        if (!e || e.target === document.getElementById('modal-about'))
+            document.getElementById('modal-about').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeAbout(); });
+
+    /* ════════════ POD : RÉDUIRE / AGRANDIR ════════════ */
+    function minimizePod() {
+        pod.style.display = 'none';
+        podTab.style.display = 'flex';
+    }
+    function expandPod() {
+        podTab.style.display = 'none';
+        pod.style.display = 'flex';
     }
 
-    /* ── PLAY TRACK (appelé depuis les cartes) ─── */
+    /* ════════════ DRAG ════════════ */
+    dragHandle.addEventListener('mousedown', e => {
+        if (e.target.closest('button')) return;
+        isDragging = true;
+        const r = pod.getBoundingClientRect();
+        dragOX = e.clientX - r.left;
+        dragOY = e.clientY - r.top;
+        pod.style.transition = 'none';
+        pod.style.right = 'auto'; pod.style.bottom = 'auto';
+        pod.style.left = r.left + 'px'; pod.style.top = r.top + 'px';
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        let x = e.clientX - dragOX;
+        let y = e.clientY - dragOY;
+        x = Math.max(0, Math.min(window.innerWidth  - pod.offsetWidth,  x));
+        y = Math.max(0, Math.min(window.innerHeight - pod.offsetHeight, y));
+        pod.style.left = x + 'px'; pod.style.top = y + 'px';
+    });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        pod.style.transition = '';
+    });
+
+    /* Touch drag */
+    dragHandle.addEventListener('touchstart', e => {
+        if (e.target.closest('button')) return;
+        isDragging = true;
+        const r = pod.getBoundingClientRect();
+        dragOX = e.touches[0].clientX - r.left;
+        dragOY = e.touches[0].clientY - r.top;
+        pod.style.right='auto'; pod.style.bottom='auto';
+        pod.style.left=r.left+'px'; pod.style.top=r.top+'px';
+    }, {passive:true});
+    document.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        let x = e.touches[0].clientX - dragOX;
+        let y = e.touches[0].clientY - dragOY;
+        x = Math.max(0, Math.min(window.innerWidth  - pod.offsetWidth,  x));
+        y = Math.max(0, Math.min(window.innerHeight - pod.offsetHeight, y));
+        pod.style.left=x+'px'; pod.style.top=y+'px';
+    }, {passive:true});
+    document.addEventListener('touchend', () => { isDragging=false; });
+
+    /* ════════════ SEEK ════════════ */
+    function seekFromEvent(e) {
+        const r = progressTrack.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+        elapsed = Math.floor(pct * total);
+        refreshProg();
+    }
+    progressTrack.addEventListener('mousedown', e => { isSeeking=true; seekFromEvent(e); });
+    document.addEventListener('mousemove',      e => { if(isSeeking) seekFromEvent(e); });
+    document.addEventListener('mouseup',        ()=> { isSeeking=false; });
+
+    /* ════════════ VOLUME ════════════ */
+    function updateVolume(v) {
+        volume = +v; volLabel.textContent = v;
+        muted = false;
+        const pct = v + '%';
+        volSlider.style.background = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${pct}, #d0d0e0 ${pct})`;
+        iconVol.className = v==0 ? 'fa-solid fa-volume-xmark' : v<50 ? 'fa-solid fa-volume-low' : 'fa-solid fa-volume-high';
+        iconVol.style.fontSize = '.7rem';
+    }
+    function toggleMute() {
+        muted = !muted;
+        if (muted) {
+            volSlider.value = 0; updateVolume(0);
+        } else {
+            volSlider.value = volume||80; updateVolume(volume||80);
+        }
+    }
+    updateVolume(80);
+
+    /* ════════════ PLAYLIST ════════════ */
     function playTrack(title, artist, timeStr) {
-        const [m, s] = timeStr.split(':').map(Number);
-        total   = m * 60 + s;
-        elapsed = 0;
-        lcdTitle.textContent  = title;
-        lcdArtist.textContent = artist;
-        if (!expanded) togglePod();
+        const existing = playlist.findIndex(t => t.title===title);
+        if (existing === -1) { playlist.push({title,artist,timeStr}); playlistIdx=playlist.length-1; }
+        else playlistIdx = existing;
+        loadTrack(playlist[playlistIdx]);
+        if (pod.style.display==='none') expandPod();
         if (!playing) togglePlay();
     }
+    function loadTrack(t) {
+        const [m,s] = t.timeStr.split(':').map(Number);
+        total=m*60+s; elapsed=0;
+        lcdTitle.textContent=t.title; lcdArtist.textContent=t.artist;
+        tabTitle.textContent=t.title;
+        const mm=Math.floor(total/60), ss=total%60;
+        lcdTotal.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+        timeTotal.textContent=mm+':'+String(ss).padStart(2,'0');
+        refreshProg();
+    }
+    function prevTrack() {
+        if(playlist.length===0) return;
+        playlistIdx = (playlistIdx-1+playlist.length)%playlist.length;
+        loadTrack(playlist[playlistIdx]);
+    }
+    function nextTrack() {
+        if(playlist.length===0) return;
+        playlistIdx = shuffleOn ? Math.floor(Math.random()*playlist.length) : (playlistIdx+1)%playlist.length;
+        loadTrack(playlist[playlistIdx]);
+    }
 
-    /* ── TOGGLE PLAY / PAUSE ───────────────────── */
+    /* ════════════ PLAY / PAUSE ════════════ */
     function togglePlay() {
-        playing = !playing;
+        playing=!playing;
         if (playing) {
-            iconPlay.classList.add('icon-hidden');
-            iconPause.classList.remove('icon-hidden');
-            setLed(true);
-            podViz.classList.remove('paused');
+            iconPlay.classList.add('icon-hidden'); iconPause.classList.remove('icon-hidden');
+            setLed(true); podViz.classList.remove('paused');
             clearInterval(ticker);
             ticker = setInterval(() => {
-                if (elapsed < total) {
-                    elapsed++;
-                    refreshProgress();
-                } else {
-                    togglePlay();
-                    elapsed = 0;
-                    refreshProgress();
-                }
+                if (elapsed < total) { elapsed++; refreshProg(); }
+                else if (repeatOn) { elapsed=0; }
+                else { togglePlay(); elapsed=0; refreshProg(); }
             }, 1000);
         } else {
-            iconPlay.classList.remove('icon-hidden');
-            iconPause.classList.add('icon-hidden');
-            setLed(false);
-            podViz.classList.add('paused');
+            iconPlay.classList.remove('icon-hidden'); iconPause.classList.add('icon-hidden');
+            setLed(false); podViz.classList.add('paused');
             clearInterval(ticker);
         }
     }
 
-    /* ── HELPERS ───────────────────────────────── */
-    function setLed(on) {
-        const style = on
-            ? 'background:#22c55e; box-shadow:0 0 6px #22c55e;'
-            : 'background:#ef4444; box-shadow:0 0 5px red;';
-        podLed.style.cssText    = style;
-        podMiniLed.style.cssText = on
-            ? 'background:#22c55e; box-shadow:0 0 8px #22c55e;'
-            : 'background:#ef4444; box-shadow:0 0 8px red;';
+    /* ════════════ SHUFFLE / REPEAT ════════════ */
+    function toggleShuffle() {
+        shuffleOn=!shuffleOn;
+        document.getElementById('icon-shuffle').style.color = shuffleOn ? 'var(--accent)' : '#aaa';
+    }
+    function toggleRepeat() {
+        repeatOn=!repeatOn;
+        document.getElementById('icon-repeat').style.color = repeatOn ? 'var(--accent)' : '#aaa';
     }
 
-    function refreshProgress() {
-        const m   = Math.floor(elapsed / 60);
-        const s   = Math.floor(elapsed % 60);
-        lcdTime.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-        const pct = total > 0 ? (elapsed / total) * 100 : 0;
-        lcdProgress.style.width  = pct + '%';
-        miniProgress.style.width = pct + '%';
+    /* ════════════ HELPERS ════════════ */
+    function setLed(on) {
+        const c=on?'#22c55e':'#ef4444', g=on?'#22c55e':'red';
+        podLed.style.cssText  = `background:${c}; box-shadow:0 0 5px ${g};`;
+        tabLed.style.cssText  = `background:${c}; box-shadow:0 0 6px ${g}; border-radius:50%; width:10px; height:10px; flex-shrink:0;`;
+    }
+    function fmt(sec) {
+        const m=Math.floor(sec/60), s=Math.floor(sec%60);
+        return m+':'+String(s).padStart(2,'0');
+    }
+    function refreshProg() {
+        lcdTime.textContent = String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');
+        timeCurrent.textContent = fmt(elapsed);
+        const p = total>0 ? (elapsed/total)*100 : 0;
+        progressFill.style.width  = p+'%';
+        progressThumb.style.left  = p+'%';
+        tabFill.style.height      = p+'%';
     }
 </script>
 </body>
