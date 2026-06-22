@@ -6,6 +6,8 @@
     <title>Polimix Record — Label Alternatif</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- hls.js : lecture audio en streaming (HLS) — gratuit, via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
     <!-- Inter : UI — Bebas Neue : titres musicaux — Share Tech Mono : écran LCD -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -40,6 +42,7 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: var(--bg-deep); }
         ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+        html { scroll-behavior: smooth; }
 
         /* ── LOGO INVERSION ──────────────────────── */
         .logo-img {
@@ -66,7 +69,7 @@
 
         /* ── TICKER ──────────────────────────────── */
         @keyframes ticker { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
-        .ticker-text { animation: ticker 22s linear infinite; white-space: nowrap; }
+        .ticker-text { animation: ticker 30s linear infinite; white-space: nowrap; }
 
         /* ── VISUALIZER ──────────────────────────── */
         @keyframes vb1  { 0%,100%{height:20%} 50%{height:80%} }
@@ -77,10 +80,6 @@
         @keyframes vb6  { 0%,100%{height:15%} 50%{height:70%} }
         @keyframes vb7  { 0%,100%{height:55%} 50%{height:20%} }
         @keyframes vb8  { 0%,100%{height:35%} 50%{height:90%} }
-        @keyframes vb9  { 0%,100%{height:60%} 50%{height:30%} }
-        @keyframes vb10 { 0%,100%{height:25%} 50%{height:75%} }
-        @keyframes vb11 { 0%,100%{height:50%} 50%{height:15%} }
-        @keyframes vb12 { 0%,100%{height:40%} 50%{height:85%} }
         .vbar { width:4px; border-radius:2px; background:var(--accent-hi); box-shadow:0 0 6px var(--accent); transform-origin:bottom; flex-shrink:0; }
         .vbars { display:flex; align-items:flex-end; gap:4px; }
         .vbar:nth-child(1)  { animation:vb1  .80s ease-in-out infinite; }
@@ -91,10 +90,6 @@
         .vbar:nth-child(6)  { animation:vb6  .75s ease-in-out infinite; }
         .vbar:nth-child(7)  { animation:vb7  .95s ease-in-out infinite; }
         .vbar:nth-child(8)  { animation:vb8  .65s ease-in-out infinite; }
-        .vbar:nth-child(9)  { animation:vb9  .88s ease-in-out infinite; }
-        .vbar:nth-child(10) { animation:vb10 .72s ease-in-out infinite; }
-        .vbar:nth-child(11) { animation:vb11 .93s ease-in-out infinite; }
-        .vbar:nth-child(12) { animation:vb12 .67s ease-in-out infinite; }
         .vbars.paused .vbar { animation-play-state:paused; }
 
         /* ── CARDS ───────────────────────────────── */
@@ -108,8 +103,6 @@
             transform:translateY(-4px);
             box-shadow:0 20px 40px rgba(0,0,0,.5), 0 0 20px var(--accent-glow);
         }
-        .music-card .play-overlay { opacity:0; transition:opacity .3s; }
-        .music-card:hover .play-overlay { opacity:1; }
 
         /* ── NAV ─────────────────────────────────── */
         .nav-item {
@@ -121,10 +114,66 @@
         .nav-item:hover { background:rgba(255,255,255,.05); color:white; }
         .nav-item.active { background:rgba(124,58,237,.2); color:white; border:1px solid rgba(124,58,237,.3); }
 
-        /* ── GENRE CARD ──────────────────────────── */
-        .genre-card { position:relative; height:140px; border-radius:20px; overflow:hidden; cursor:pointer; }
-        .genre-card img { width:100%; height:100%; object-fit:cover; transition:transform .7s; }
-        .genre-card:hover img { transform:scale(1.1); }
+        /* ── ALBUM HEADER ────────────────────────── */
+        .album-cover {
+            border-radius:18px; overflow:hidden; flex-shrink:0;
+            box-shadow:0 25px 55px rgba(0,0,0,.6), 0 0 30px var(--accent-glow);
+            border:1px solid rgba(167,139,250,.25);
+        }
+        .album-cover img { display:block; width:100%; height:100%; object-fit:cover; }
+
+        /* ── TRACK LIST ──────────────────────────── */
+        .track-row {
+            display:flex; align-items:center; gap:14px;
+            padding:9px 12px; border-radius:12px; cursor:pointer;
+            transition:background .15s; border:1px solid transparent;
+        }
+        .track-row:hover { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.06); }
+        .track-row.playing { background:rgba(124,58,237,.16); border-color:rgba(124,58,237,.35); }
+        .track-num { width:26px; text-align:center; flex-shrink:0; position:relative; color:#71717a; font-variant-numeric:tabular-nums; font-size:13px; }
+        .track-row:hover .track-num .num { opacity:0; }
+        .track-num .play-ic { position:absolute; inset:0; margin:auto; width:fit-content; height:fit-content; opacity:0; color:white; font-size:12px; }
+        .track-row:hover .track-num .play-ic { opacity:1; }
+        .track-row.playing .track-num .num { display:none; }
+        .track-eq { display:none; gap:2px; align-items:flex-end; height:14px; justify-content:center; }
+        .track-row.playing .track-eq { display:flex; }
+        .track-row.playing .track-num .play-ic { opacity:0; }
+        .track-eq .b { width:3px; background:var(--accent-hi); border-radius:1px; animation:vb1 .8s ease-in-out infinite; }
+        .track-eq .b:nth-child(2){ animation:vb4 1s ease-in-out infinite; }
+        .track-eq .b:nth-child(3){ animation:vb3 .7s ease-in-out infinite; }
+        .track-main { flex:1; min-width:0; }
+        .track-title { font-weight:600; font-size:14px; color:#f4f4f5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .track-sub { font-size:11px; color:#71717a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .track-dur { font-size:12px; color:#71717a; font-variant-numeric:tabular-nums; flex-shrink:0; }
+        .play-stat { display:flex; align-items:center; gap:5px; flex-shrink:0; color:#71717a; font-size:12px; font-variant-numeric:tabular-nums; min-width:42px; }
+        .play-stat i { font-size:11px; }
+        @media (max-width:560px){ .play-stat { display:none; } }
+        .like-btn {
+            display:flex; align-items:center; gap:6px; flex-shrink:0;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+            border-radius:999px; padding:5px 11px; cursor:pointer; color:#a1a1aa;
+            font-size:12px; transition:all .15s; font-variant-numeric:tabular-nums;
+        }
+        .like-btn:hover { color:#fb7185; border-color:rgba(251,113,133,.4); background:rgba(251,113,133,.08); }
+        .like-btn.liked { color:#fb7185; border-color:rgba(251,113,133,.5); background:rgba(251,113,133,.12); }
+        .like-btn.liked .fa-heart { font-weight:900; }
+
+        /* ── ARTISTE CARD ────────────────────────── */
+        .artist-avatar {
+            width:64px; height:64px; border-radius:50%; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-family:'Bebas Neue',sans-serif; font-size:1.7rem; color:white;
+            background:linear-gradient(135deg,var(--accent),#38bdf8);
+            box-shadow:0 0 18px var(--accent-glow);
+        }
+
+        /* ── CLASSEMENT ──────────────────────────── */
+        .rank-row { display:flex; align-items:center; gap:14px; padding:10px 14px; border-radius:12px; transition:background .15s; }
+        .rank-row:hover { background:rgba(255,255,255,.04); }
+        .rank-pos { width:34px; text-align:center; font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:#52525b; flex-shrink:0; }
+        .rank-row:nth-child(1) .rank-pos { color:#fbbf24; }
+        .rank-row:nth-child(2) .rank-pos { color:#d4d4d8; }
+        .rank-row:nth-child(3) .rank-pos { color:#f59e0b; }
 
         /* ── BRIDGE ──────────────────────────────── */
         .bridge-card {
@@ -135,7 +184,7 @@
         }
         .bridge-card:hover { background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(0,200,150,.15)); transform:translateY(-2px); }
 
-        /* ── QUI SOMMES-NOUS MODAL ───────────────── */
+        /* ── MODAL ───────────────────────────────── */
         .modal-overlay {
             position:fixed; inset:0; z-index:200;
             background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
@@ -158,9 +207,6 @@
             transition:all .5s cubic-bezier(.25,1,.5,1);
             z-index:50; border-radius:50px;
         }
-        .pod.minimized { width:80px; height:100px; border-radius:50% 50% 50% 50%/60% 60% 40% 40%; cursor:pointer; }
-        .pod.minimized:hover { transform:scale(1.05) translateY(-5px); }
-        .pod.expanded { width:340px; height:auto; border-radius:40px; padding:18px; }
 
         /* ── LCD ─────────────────────────────────── */
         .lcd { background:#030805; border-radius:12px; box-shadow:inset 0 4px 15px rgba(0,0,0,1), 0 1px 1px rgba(255,255,255,.6); position:relative; overflow:hidden; }
@@ -186,48 +232,33 @@
         .pod-btn-sm { width:30px; height:30px; font-size:.75rem; }
         .icon-hidden { display:none; }
 
-        /* ── DRAG HANDLE ─────────────────────────── */
-        .drag-handle {
-            cursor:grab; user-select:none;
-            display:flex; align-items:center; justify-content:space-between; gap:8px;
+        /* ── POD HEADER ──────────────────────────── */
+        .pod-header { user-select:none; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        /* ── POD CORPS 3 COLONNES (format large) ─── */
+        .pod-body { display:flex; gap:12px; align-items:stretch; }
+        .pod-col-left { flex:1.4; display:flex; flex-direction:column; gap:8px; min-width:0; }
+        .pod-col-mid  { flex:1;   display:flex; flex-direction:column; gap:10px; justify-content:center; min-width:0; }
+        .pod-col-like { flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+                        padding-left:10px; border-left:1px solid rgba(0,0,0,.08); }
+        .pod-like-big { width:54px; height:54px; font-size:1.3rem; }
+        .pod-like-big.liked { color:#fb7185 !important; }
+        @media (max-width:520px){
+            .pod-body { flex-wrap:wrap; }
+            .pod-col-left { flex:1 1 100%; }
+            .pod-col-like { border-left:none; }
+            #polimix-pod { width:auto !important; right:12px !important; left:12px !important; }
         }
-        .drag-handle:active { cursor:grabbing; }
-        .grip { display:flex; flex-direction:column; gap:3px; padding:4px; }
-        .grip span { display:block; width:18px; height:2px; background:#ccc; border-radius:1px; }
 
         /* ── PROGRESS BAR SEEKABLE ───────────────── */
-        .progress-track {
-            position:relative; height:6px; border-radius:3px; cursor:pointer;
-            background:#d8d8e8;
-            box-shadow:inset 1px 1px 3px rgba(0,0,0,.15);
-        }
-        .progress-fill {
-            position:absolute; top:0; left:0; height:100%; border-radius:3px;
-            background:linear-gradient(90deg,var(--accent),var(--accent-hi));
-            pointer-events:none; transition:width .1s linear;
-        }
-        .progress-thumb {
-            position:absolute; top:50%; width:14px; height:14px;
-            background:white; border:2px solid var(--accent); border-radius:50%;
-            transform:translate(-50%,-50%); pointer-events:none;
-            box-shadow:0 2px 6px rgba(0,0,0,.25);
-            transition:left .1s linear;
-        }
+        .progress-track { position:relative; height:6px; border-radius:3px; cursor:pointer; background:#d8d8e8; box-shadow:inset 1px 1px 3px rgba(0,0,0,.15); }
+        .progress-fill { position:absolute; top:0; left:0; height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent),var(--accent-hi)); pointer-events:none; }
+        .progress-thumb { position:absolute; top:50%; width:14px; height:14px; background:white; border:2px solid var(--accent); border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; box-shadow:0 2px 6px rgba(0,0,0,.25); }
 
         /* ── VOLUME SLIDER ───────────────────────── */
-        .vol-slider {
-            -webkit-appearance:none; appearance:none;
-            flex:1; height:4px; border-radius:2px; outline:none; cursor:pointer;
-            background:linear-gradient(90deg, var(--accent) 0%, var(--accent) 80%, #d0d0e0 80%);
-        }
-        .vol-slider::-webkit-slider-thumb {
-            -webkit-appearance:none; width:13px; height:13px;
-            border-radius:50%; background:white; cursor:pointer;
-            border:2px solid var(--accent);
-            box-shadow:1px 1px 4px rgba(0,0,0,.2);
-        }
+        .vol-slider { -webkit-appearance:none; appearance:none; flex:1; height:4px; border-radius:2px; outline:none; cursor:pointer; background:linear-gradient(90deg, var(--accent) 0%, var(--accent) 80%, #d0d0e0 80%); }
+        .vol-slider::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:white; cursor:pointer; border:2px solid var(--accent); box-shadow:1px 1px 4px rgba(0,0,0,.2); }
 
-        /* ── POD ONGLET LATÉRAL (mode réduit) ────── */
+        /* ── POD ONGLET LATÉRAL ──────────────────── */
         .pod-tab {
             position:fixed; right:0; top:50%; transform:translateY(-50%);
             width:44px; border-radius:12px 0 0 12px;
@@ -235,25 +266,44 @@
             box-shadow:-6px 0 20px rgba(0,0,0,.4), inset 3px 0 8px rgba(255,255,255,.8);
             border:1px solid rgba(255,255,255,.5); border-right:none;
             display:none; flex-direction:column; align-items:center;
-            padding:14px 0; gap:10px; cursor:pointer; z-index:51;
-            transition:all .3s ease;
+            padding:14px 0; gap:10px; cursor:pointer; z-index:51; transition:all .3s ease;
         }
         .pod-tab:hover { width:52px; box-shadow:-8px 0 24px rgba(124,58,237,.3), inset 3px 0 8px rgba(255,255,255,.8); }
-        .tab-track-name {
-            writing-mode:vertical-rl; text-orientation:mixed;
-            font-size:9px; font-weight:700; color:#555; letter-spacing:.1em;
-            text-transform:uppercase; max-height:80px; overflow:hidden;
-            white-space:nowrap; text-overflow:ellipsis;
-        }
-        .tab-mini-bar {
-            width:4px; height:50px; border-radius:2px; overflow:hidden;
-            background:#e0e0ee; position:relative;
-        }
-        .tab-mini-fill {
-            position:absolute; bottom:0; left:0; right:0;
-            background:var(--accent); border-radius:2px;
-            transition:height .5s linear;
-        }
+        .tab-track-name { writing-mode:vertical-rl; text-orientation:mixed; font-size:9px; font-weight:700; color:#555; letter-spacing:.1em; text-transform:uppercase; max-height:80px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+        .tab-mini-bar { width:4px; height:50px; border-radius:2px; overflow:hidden; background:#e0e0ee; position:relative; }
+        .tab-mini-fill { position:absolute; bottom:0; left:0; right:0; background:var(--accent); border-radius:2px; transition:height .5s linear; }
+
+        .section-title { font-family:'Bebas Neue',sans-serif; }
+
+        /* ── BARRE LECTEUR (style YouTube, pleine largeur) ─── */
+        #player-bar { position:fixed; left:0; right:0; bottom:0; z-index:60;
+            background:rgba(10,10,20,.97); backdrop-filter:blur(16px);
+            border-top:1px solid rgba(255,255,255,.08); }
+        .bar-progress { position:relative; height:5px; cursor:pointer; background:rgba(255,255,255,.13); }
+        .bar-progress .progress-fill { height:100%; border-radius:0; }
+        .bar-progress .progress-thumb { opacity:0; transition:opacity .15s; }
+        .bar-progress:hover { height:7px; }
+        .bar-progress:hover .progress-thumb { opacity:1; }
+        .bar-row { display:flex; align-items:center; gap:16px; padding:9px 16px; }
+        .bar-info { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
+        .bar-cover { width:46px; height:46px; border-radius:8px; object-fit:cover; flex-shrink:0;
+            background:#15151f; border:1px solid rgba(255,255,255,.08); }
+        .bar-meta { min-width:0; }
+        .bar-title { font-weight:600; font-size:14px; color:#f4f4f5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .bar-artist { font-size:12px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .bar-controls { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+        .bar-right { display:flex; align-items:center; gap:8px; flex:1; justify-content:flex-end; min-width:0; }
+        .bar-btn { background:none; border:none; color:#d4d4d8; cursor:pointer; width:38px; height:38px;
+            border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; transition:all .15s; }
+        .bar-btn:hover { color:#fff; background:rgba(255,255,255,.08); }
+        .bar-btn-play { background:#fff; color:#0a0a14; width:42px; height:42px; font-size:16px; }
+        .bar-btn-play:hover { background:#fff; color:#0a0a14; transform:scale(1.06); }
+        .bar-time { font-size:12px; color:#9ca3af; font-variant-numeric:tabular-nums; margin-left:6px; white-space:nowrap; }
+        .bar-vol-label { font-size:11px; color:#9ca3af; min-width:20px; text-align:right; font-variant-numeric:tabular-nums; }
+        .bar-like.liked, .bar-like .fa-solid { color:#fb7185; }
+        #player-bar .vol-slider { max-width:90px; }
+        @media (max-width:880px){ .hide-md { display:none !important; } }
+        @media (max-width:560px){ .hide-sm { display:none !important; } .bar-row { gap:10px; padding:8px 12px; } }
     </style>
 </head>
 <body class="flex h-screen antialiased">
@@ -264,7 +314,6 @@
         <button onclick="closeAbout()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition" aria-label="Fermer">
             <i class="fa-solid fa-xmark text-xl"></i>
         </button>
-
         <div class="flex items-center gap-4 mb-6">
             <img src="assets/logo-polimix.png" class="logo-img" style="width:56px;height:56px;" alt="Polimix Record">
             <div>
@@ -272,8 +321,7 @@
                 <p class="text-xs tracking-widest uppercase mt-1" style="color:var(--accent-hi);">Label Alternatif</p>
             </div>
         </div>
-
-        <div class="space-y-4 text-zinc-300 text-sm leading-relaxed">
+        <div id="about-body" class="space-y-4 text-zinc-300 text-sm leading-relaxed">
             <p>
                 <strong class="text-white">Polimix Record</strong> est un label alternatif fondé par <strong class="text-white">Xipilom</strong>,
                 à la croisée de la création humaine et de l'intelligence artificielle.
@@ -282,11 +330,6 @@
                 Chaque artiste du catalogue est une <strong class="text-white">entité sonore construite</strong> à partir d'un musicien ou
                 créateur réel — son univers, ses influences, sa sensibilité. L'IA ne remplace pas l'humain :
                 elle l'amplifie, l'explore, lui donne une nouvelle voix.
-            </p>
-            <p>
-                Polimix ne connaît pas de frontières de style ni de format. Synthwave, électro, acoustique,
-                ambiant — tout coexiste ici, porté par une même conviction : <em>la musique de demain
-                s'écrit aujourd'hui, à plusieurs mains, humaines et algorithmiques.</em>
             </p>
             <div class="pt-2 border-t border-zinc-800 flex items-center gap-3">
                 <i class="fa-solid fa-skull text-zinc-500"></i>
@@ -299,8 +342,6 @@
 <!-- ══════════════════ SIDEBAR ══════════════════ -->
 <aside class="w-60 hidden md:flex flex-col border-r flex-shrink-0"
        style="background:var(--bg-panel); border-color:rgba(255,255,255,.06);">
-
-    <!-- Logo pleine largeur -->
     <div class="border-b" style="border-color:rgba(255,255,255,.06);">
         <img src="assets/logo-polimix.png" class="logo-img logo-sidebar" alt="Polimix Record">
         <div class="text-center pb-3 mt-1">
@@ -308,26 +349,19 @@
             <p class="text-[9px] tracking-widest uppercase" style="color:var(--accent-hi);">Record</p>
         </div>
     </div>
-
     <nav class="flex-1 px-3 space-y-1 mt-3">
-        <a href="#" class="nav-item active"><i class="fa-solid fa-house w-4 text-center"></i>Accueil</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-fire w-4 text-center"></i>Nouveautés</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-compact-disc w-4 text-center"></i>Genres</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-users w-4 text-center"></i>Artistes</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-waveform-lines w-4 text-center"></i>Visualiseur</a>
+        <a href="#top"         class="nav-item active"><i class="fa-solid fa-house w-4 text-center"></i>Accueil</a>
+        <a href="#album"       class="nav-item"><i class="fa-solid fa-compact-disc w-4 text-center"></i>Album</a>
+        <a href="#artistes"    class="nav-item"><i class="fa-solid fa-users w-4 text-center"></i>Artistes</a>
+        <a href="#classement"  class="nav-item"><i class="fa-solid fa-ranking-star w-4 text-center"></i>Classement</a>
     </nav>
-
-    <!-- Bouton Qui sommes-nous -->
     <div class="px-3 mb-3">
         <button onclick="openAbout()"
                 class="w-full py-3 rounded-2xl font-semibold text-sm transition flex items-center justify-center gap-2"
                 style="background:rgba(124,58,237,.2); border:1px solid rgba(124,58,237,.4); color:var(--accent-hi);">
-            <i class="fa-solid fa-skull text-xs"></i>
-            Qui sommes-nous ?
+            <i class="fa-solid fa-skull text-xs"></i> Qui sommes-nous ?
         </button>
     </div>
-
-    <!-- Lien écosystème -->
     <div class="p-3 mx-3 rounded-2xl" style="background:rgba(124,58,237,.08); border:1px solid rgba(124,58,237,.18);">
         <p class="text-xs font-semibold mb-2" style="color:var(--accent-hi);">Écosystème Xipinow</p>
         <a href="https://xipinocode.xipinow.com" target="_blank" rel="noopener"
@@ -337,7 +371,6 @@
             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
         </a>
     </div>
-
     <div class="px-4 py-3 mx-3 mb-3 mt-2 rounded-2xl" style="background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);">
         <p class="text-xs font-bold text-white mb-1">Label Alternatif</p>
         <p class="text-[10px] text-zinc-500 leading-relaxed">Création IA × Âme humaine</p>
@@ -345,7 +378,7 @@
 </aside>
 
 <!-- ══════════════════ MAIN ══════════════════ -->
-<main class="flex-1 overflow-y-auto pb-40 min-w-0">
+<main class="flex-1 overflow-y-auto pb-40 min-w-0" id="top">
 
     <!-- Mobile header -->
     <header class="md:hidden p-4 flex items-center justify-between sticky top-0 z-40"
@@ -354,25 +387,20 @@
             <img src="assets/logo-polimix.png" class="logo-img" style="width:36px;height:36px;" alt="Logo">
             <h1 class="font-bebas text-2xl tracking-widest">POLIMIX</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <button onclick="openAbout()" class="text-xs px-3 py-1.5 rounded-full font-semibold transition"
-                    style="background:rgba(124,58,237,.25); border:1px solid rgba(124,58,237,.4); color:var(--accent-hi);">
-                Qui sommes-nous ?
-            </button>
-            <button class="text-zinc-400 p-2" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-        </div>
+        <button onclick="openAbout()" class="text-xs px-3 py-1.5 rounded-full font-semibold transition"
+                style="background:rgba(124,58,237,.25); border:1px solid rgba(124,58,237,.4); color:var(--accent-hi);">
+            Qui sommes-nous ?
+        </button>
     </header>
 
     <!-- ── HERO ───────────────────────────── -->
-    <div class="relative overflow-hidden" style="min-height:340px;">
+    <div class="relative overflow-hidden" style="min-height:300px;">
         <div class="aurora-blob a1 w-96 h-96" style="background:rgba(124,58,237,.55); top:-120px; left:-60px;"></div>
         <div class="aurora-blob a2 w-72 h-72" style="background:rgba(0,200,220,.18); top:20px; right:80px;"></div>
         <div class="aurora-blob a3 w-64 h-64" style="background:rgba(220,0,160,.18); bottom:-60px; right:-40px;"></div>
-        <div class="absolute inset-0 opacity-5"
-             style="background:url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop') center/cover;"></div>
 
-        <div class="relative z-10 p-8 md:p-12 flex flex-col justify-end" style="min-height:340px;">
-            <span class="mb-3 inline-block px-3 py-1 text-[10px] font-black tracking-widest uppercase rounded-full"
+        <div class="relative z-10 p-8 md:p-12 flex flex-col justify-end" style="min-height:300px;">
+            <span class="mb-3 inline-block px-3 py-1 text-[10px] font-black tracking-widest uppercase rounded-full self-start"
                   style="background:rgba(124,58,237,.3); border:1px solid rgba(167,139,250,.4); color:var(--accent-hi);">
                 Label Alternatif
             </span>
@@ -386,21 +414,9 @@
                 Chaque artiste Polimix est né d'un créateur réel.<br>
                 Humain à l'origine, libre dans sa forme.
             </p>
-
-            <div class="mt-5 flex items-center gap-3">
-                <button onclick="openAbout()"
-                        class="px-5 py-2.5 rounded-full font-semibold text-sm transition flex items-center gap-2"
-                        style="background:rgba(124,58,237,.35); border:1px solid rgba(167,139,250,.5); color:white;">
-                    <i class="fa-solid fa-skull text-xs"></i>
-                    Qui sommes-nous ?
-                </button>
-            </div>
-
             <div class="mt-5 overflow-hidden rounded-full py-2"
-                 style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); max-width:520px;">
-                <p class="ticker-text text-[11px] text-zinc-500 font-lcd tracking-widest">
-                    &nbsp;▶ NEON PULSE — V-SYNAPSE &nbsp;▶ ACOUSTIC DREAMS — LUMINA &nbsp;▶ CYBERNETIC SOUL — UNIT-7 &nbsp;▶ DIGITAL RAIN — ORACLE-X &nbsp;▶ POLIMIX RECORD © 2025 &nbsp;&nbsp;
-                </p>
+                 style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); max-width:560px;">
+                <p id="ticker" class="ticker-text text-[11px] text-zinc-500 font-lcd tracking-widest">&nbsp;▶ POLIMIX RECORD &nbsp;</p>
             </div>
         </div>
     </div>
@@ -408,180 +424,43 @@
     <!-- ── CONTENT ────────────────────────── -->
     <div class="p-6 md:p-8 space-y-14">
 
-        <!-- Nouveautés -->
-        <section>
-            <div class="flex items-end justify-between mb-5">
-                <div>
-                    <h3 class="font-bebas text-3xl tracking-wider text-white">Dernières Sorties</h3>
-                    <p class="text-zinc-500 text-xs mt-1">Tous styles confondus</p>
-                </div>
-                <button class="text-xs font-semibold transition" style="color:var(--accent-hi);">Tout voir →</button>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
-
-                <!-- Carte artiste : titre + artiste + origine réelle -->
-                <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
-                     onclick="playTrack('Neon Pulse','V-Synapse','03:42')">
-                    <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
-                        <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover" alt="Neon Pulse" loading="lazy">
-                        <div class="play-overlay absolute inset-0 flex items-center justify-center"
-                             style="background:rgba(0,0,0,.5);">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black shadow-xl">
-                                <i class="fa-solid fa-play ml-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="font-bold text-white text-sm truncate">Neon Pulse</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">V-Synapse</p>
-                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : Daft Punk</p>
-                </div>
-
-                <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
-                     onclick="playTrack('Acoustic Dreams','Lumina','04:15')">
-                    <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
-                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover" alt="Acoustic Dreams" loading="lazy">
-                        <div class="play-overlay absolute inset-0 flex items-center justify-center"
-                             style="background:rgba(0,0,0,.5);">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black shadow-xl">
-                                <i class="fa-solid fa-play ml-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="font-bold text-white text-sm truncate">Acoustic Dreams</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">Lumina</p>
-                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : Sarah J.</p>
-                </div>
-
-                <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
-                     onclick="playTrack('Cybernetic Soul','Unit-7','02:58')">
-                    <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
-                        <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover" alt="Cybernetic Soul" loading="lazy">
-                        <div class="play-overlay absolute inset-0 flex items-center justify-center"
-                             style="background:rgba(0,0,0,.5);">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black shadow-xl">
-                                <i class="fa-solid fa-play ml-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="font-bold text-white text-sm truncate">Cybernetic Soul</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">Unit-7</p>
-                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : The Roots</p>
-                </div>
-
-                <div class="music-card glass-card rounded-2xl p-3 cursor-pointer"
-                     onclick="playTrack('Digital Rain','Oracle-X','05:22')">
-                    <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
-                        <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover" alt="Digital Rain" loading="lazy">
-                        <div class="play-overlay absolute inset-0 flex items-center justify-center"
-                             style="background:rgba(0,0,0,.5);">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black shadow-xl">
-                                <i class="fa-solid fa-play ml-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="font-bold text-white text-sm truncate">Digital Rain</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">Oracle-X</p>
-                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : M. Dubois</p>
-                </div>
-
-                <div class="hidden lg:block music-card glass-card rounded-2xl p-3 cursor-pointer"
-                     onclick="playTrack('Echoes of Tomorrow','V-Synapse','04:05')">
-                    <div class="relative aspect-square rounded-xl overflow-hidden mb-3">
-                        <img src="https://images.unsplash.com/photo-1614613535808-3196b289ac4a?q=80&w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover" alt="Echoes of Tomorrow" loading="lazy">
-                        <div class="play-overlay absolute inset-0 flex items-center justify-center"
-                             style="background:rgba(0,0,0,.5);">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black shadow-xl">
-                                <i class="fa-solid fa-play ml-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="font-bold text-white text-sm truncate">Echoes of Tomorrow</h4>
-                    <p class="text-[11px] truncate mt-1" style="color:var(--accent-hi);">V-Synapse</p>
-                    <p class="text-[10px] text-zinc-600 truncate">Inspiré par : Alex R.</p>
-                </div>
-
+        <!-- ALBUM -->
+        <section id="album" class="scroll-mt-6">
+            <div id="album-header"><!-- généré par JS --></div>
+            <div id="track-list" class="mt-6 space-y-0.5">
+                <div class="text-zinc-600 text-sm py-10 text-center">Chargement des morceaux…</div>
             </div>
         </section>
 
-        <!-- EMPLACEMENT VISUALISEUR — remplacer #viz-slot quand le module est prêt -->
-        <section>
-            <div class="flex items-end justify-between mb-5">
-                <div>
-                    <h3 class="font-bebas text-3xl tracking-wider text-white">Visualiseur Audio</h3>
-                    <p class="text-zinc-500 text-xs mt-1">Module interactif — bientôt disponible</p>
-                </div>
-                <span class="text-[10px] px-2 py-1 rounded-full font-bold tracking-wider"
-                      style="background:rgba(255,180,0,.12); border:1px solid rgba(255,180,0,.3); color:#fbbf24;">BIENTÔT</span>
+        <!-- ARTISTES -->
+        <section id="artistes" class="scroll-mt-6">
+            <div class="mb-5">
+                <h3 class="section-title text-3xl tracking-wider text-white">Les Artistes</h3>
+                <p class="text-zinc-500 text-xs mt-1">Cliquez un artiste pour voir et écouter ses morceaux</p>
             </div>
-            <div id="viz-slot" class="rounded-2xl overflow-hidden flex items-center justify-center"
-                 style="height:200px; background:linear-gradient(135deg,rgba(124,58,237,.09),rgba(0,200,200,.05)); border:1px dashed rgba(124,58,237,.3);">
-                <div class="flex flex-col items-center gap-4">
-                    <div class="vbars" style="height:48px;">
-                        <div class="vbar" style="height:40%;"></div>
-                        <div class="vbar" style="height:60%;"></div>
-                        <div class="vbar" style="height:30%;"></div>
-                        <div class="vbar" style="height:80%;"></div>
-                        <div class="vbar" style="height:50%;"></div>
-                        <div class="vbar" style="height:70%;"></div>
-                        <div class="vbar" style="height:40%;"></div>
-                        <div class="vbar" style="height:60%;"></div>
-                        <div class="vbar" style="height:20%;"></div>
-                        <div class="vbar" style="height:90%;"></div>
-                        <div class="vbar" style="height:45%;"></div>
-                        <div class="vbar" style="height:65%;"></div>
-                    </div>
-                    <p class="text-zinc-600 text-xs font-lcd tracking-widest">VISUALIZER MODULE INCOMING</p>
-                </div>
-            </div>
+            <div id="artist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="artist-focus" class="glass-card rounded-2xl p-4 mt-4" style="display:none;"></div>
         </section>
 
-        <!-- Par Genre -->
-        <section>
+        <!-- CLASSEMENT -->
+        <section id="classement" class="scroll-mt-6">
             <div class="flex items-end justify-between mb-5">
                 <div>
-                    <h3 class="font-bebas text-3xl tracking-wider text-white">Par Genre</h3>
-                    <p class="text-zinc-500 text-xs mt-1">Explorez nos univers</p>
+                    <h3 class="section-title text-3xl tracking-wider text-white">Classement Communauté</h3>
+                    <p class="text-zinc-500 text-xs mt-1">Les morceaux les plus aimés, en temps réel</p>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="genre-card group">
-                    <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=600&auto=format&fit=crop" alt="Synthwave" loading="lazy">
-                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent);"></div>
-                    <div class="absolute bottom-0 left-0 p-4">
-                        <h4 class="font-bebas text-2xl tracking-wider text-white">Synthwave / Cyberpunk</h4>
-                        <p class="text-xs text-zinc-400">5 Artistes</p>
-                    </div>
-                </div>
-                <div class="genre-card group">
-                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop" alt="Électro" loading="lazy">
-                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent);"></div>
-                    <div class="absolute bottom-0 left-0 p-4">
-                        <h4 class="font-bebas text-2xl tracking-wider text-white">Électro / House</h4>
-                        <p class="text-xs text-zinc-400">12 Artistes</p>
-                    </div>
-                </div>
-                <div class="genre-card group">
-                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop" alt="Ambiant" loading="lazy">
-                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,.85),transparent);"></div>
-                    <div class="absolute bottom-0 left-0 p-4">
-                        <h4 class="font-bebas text-2xl tracking-wider text-white">Ambiant / Chill</h4>
-                        <p class="text-xs text-zinc-400">3 Artistes</p>
-                    </div>
-                </div>
-            </div>
+            <div id="ranking" class="glass-card rounded-2xl p-3"></div>
+            <p id="ranking-note" class="text-[11px] text-zinc-600 mt-3 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Les ❤️ et les 🎧 lectures sont <strong>partagés entre tous les visiteurs</strong> (compteur en temps réel). 1 like par morceau et par appareil.</span>
+            </p>
         </section>
 
         <!-- Bridge Xipinocode -->
         <section>
             <a href="https://xipinocode.xipinow.com" target="_blank" rel="noopener" class="bridge-card">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                     style="background:rgba(124,58,237,.3);">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,.3);">
                     <i class="fa-solid fa-code text-lg" style="color:var(--accent-hi);"></i>
                 </div>
                 <div class="flex-1">
@@ -596,324 +475,479 @@
     </div>
 </main>
 
-<!-- ══════════════════ ONGLET LATÉRAL (mode réduit) ══════════════════ -->
-<div id="pod-tab" class="pod-tab" onclick="expandPod()" title="Ouvrir le lecteur">
-    <div id="tab-led" class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#ef4444; box-shadow:0 0 6px red;"></div>
-    <i class="fa-solid fa-skull text-zinc-400 text-base"></i>
-    <div class="tab-track-name" id="tab-title">POLIMIX</div>
-    <div class="tab-mini-bar">
-        <div id="tab-fill" class="tab-mini-fill" style="height:0%;"></div>
+<!-- ══════════════════ BARRE LECTEUR (style YouTube, pleine largeur) ══════════════════ -->
+<div id="player-bar">
+    <!-- Barre de progression fine, pleine largeur (cliquable) -->
+    <div id="progress-track" class="bar-progress">
+        <div id="progress-fill" class="progress-fill"></div>
+        <div id="progress-thumb" class="progress-thumb"></div>
     </div>
-</div>
-
-<!-- ══════════════════ POD LECTEUR ══════════════════ -->
-<div id="polimix-pod" class="pod expanded fixed flex flex-col"
-     style="width:320px; bottom:24px; right:24px; padding:16px; gap:10px; z-index:50;">
-
-    <!-- Poignée de déplacement -->
-    <div id="drag-handle" class="drag-handle">
-        <div class="flex items-center gap-2">
-            <div class="grip"><span></span><span></span><span></span></div>
-            <div class="flex items-center gap-1.5">
-                <div id="pod-led" class="w-2 h-2 rounded-full" style="background:#ef4444; box-shadow:0 0 5px red;"></div>
-                <span class="text-[9px] font-lcd text-gray-400 tracking-widest uppercase">Polimix Pod</span>
+    <div class="bar-row">
+        <!-- GAUCHE : morceau en cours -->
+        <div class="bar-info">
+            <img id="bar-cover" class="bar-cover" alt="">
+            <div class="bar-meta">
+                <div id="lcd-title" class="bar-title">Sélectionne un morceau</div>
+                <div id="lcd-artist" class="bar-artist hide-sm"></div>
             </div>
         </div>
-        <button onclick="minimizePod()" class="pod-btn pod-btn-sm" title="Réduire" aria-label="Réduire en onglet">
-            <i class="fa-solid fa-minus text-xs"></i>
-        </button>
-    </div>
-
-    <!-- Écran LCD : titre + artiste + viz -->
-    <div class="lcd p-3" style="height:80px;">
-        <div class="relative z-20 h-full flex flex-col justify-between font-lcd">
-            <div class="flex justify-between items-start">
-                <div class="flex-1 mr-2 overflow-hidden">
-                    <div class="text-[9px] font-bold tracking-widest uppercase" style="color:#166534;">Now Playing</div>
-                    <div id="lcd-title" class="lcd-text text-sm uppercase tracking-wider truncate mt-0.5">EN ATTENTE...</div>
-                    <div id="lcd-artist" class="lcd-text text-[10px] opacity-70 truncate">SELECT TRACK</div>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <div id="lcd-time"  class="lcd-text text-sm leading-none">00:00</div>
-                    <div id="lcd-total" class="lcd-text text-[9px] opacity-50 mt-0.5">00:00</div>
-                </div>
-            </div>
-            <!-- Barres visualiseur mini -->
-            <div id="pod-viz" class="vbars paused" style="height:16px; gap:2px;">
-                <div class="vbar" style="width:2px;height:40%;"></div>
-                <div class="vbar" style="width:2px;height:70%;"></div>
-                <div class="vbar" style="width:2px;height:30%;"></div>
-                <div class="vbar" style="width:2px;height:90%;"></div>
-                <div class="vbar" style="width:2px;height:55%;"></div>
-                <div class="vbar" style="width:2px;height:65%;"></div>
-                <div class="vbar" style="width:2px;height:20%;"></div>
-                <div class="vbar" style="width:2px;height:80%;"></div>
-            </div>
+        <!-- CENTRE : transport -->
+        <div class="bar-controls">
+            <button id="btn-shuffle" class="bar-btn hide-md" title="Aléatoire" onclick="toggleShuffle()"><i id="icon-shuffle" class="fa-solid fa-shuffle"></i></button>
+            <button class="bar-btn" title="Précédent" onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button>
+            <button class="bar-btn bar-btn-play" title="Lecture / Pause" onclick="togglePlay()">
+                <i id="icon-play" class="fa-solid fa-play"></i>
+                <i id="icon-pause" class="fa-solid fa-pause icon-hidden"></i>
+            </button>
+            <button class="bar-btn" title="Suivant" onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button>
+            <button id="btn-repeat" class="bar-btn hide-md" title="Répéter" onclick="toggleRepeat()"><i id="icon-repeat" class="fa-solid fa-repeat"></i></button>
+            <div class="bar-time hide-sm"><span id="time-current">0:00</span> / <span id="time-total">0:00</span></div>
         </div>
-    </div>
-
-    <!-- Barre de transport (seekable) -->
-    <div>
-        <div id="progress-track" class="progress-track">
-            <div id="progress-fill" class="progress-fill" style="width:0%;"></div>
-            <div id="progress-thumb" class="progress-thumb" style="left:0%;"></div>
+        <!-- DROITE : volume + like -->
+        <div class="bar-right">
+            <button class="bar-btn hide-md" title="Muet" onclick="toggleMute()"><i id="icon-vol" class="fa-solid fa-volume-high"></i></button>
+            <input id="vol-slider" type="range" class="vol-slider hide-md" min="0" max="100" value="80" oninput="updateVolume(this.value)" aria-label="Volume">
+            <span id="vol-label" class="bar-vol-label hide-md">80</span>
+            <button id="pod-like" class="bar-btn bar-like" title="J'aime ce morceau" onclick="likeCurrent()"><i id="icon-pod-like" class="fa-regular fa-heart"></i></button>
         </div>
-        <div class="flex justify-between mt-1" style="font-size:10px; color:#888;">
-            <span id="time-current">0:00</span>
-            <span id="time-total">0:00</span>
-        </div>
-    </div>
-
-    <!-- Contrôles principaux -->
-    <div class="flex justify-center items-center gap-2">
-        <button id="btn-shuffle" class="pod-btn pod-btn-sm" title="Aléatoire" onclick="toggleShuffle()">
-            <i id="icon-shuffle" class="fa-solid fa-shuffle" style="font-size:.7rem; color:#aaa;"></i>
-        </button>
-        <button class="pod-btn" aria-label="Précédent" onclick="prevTrack()">
-            <i class="fa-solid fa-backward-step"></i>
-        </button>
-        <button onclick="togglePlay()" class="pod-btn pod-btn-lg" aria-label="Lecture / Pause">
-            <i id="icon-play"  class="fa-solid fa-play  ml-0.5"></i>
-            <i id="icon-pause" class="fa-solid fa-pause icon-hidden"></i>
-        </button>
-        <button class="pod-btn" aria-label="Suivant" onclick="nextTrack()">
-            <i class="fa-solid fa-forward-step"></i>
-        </button>
-        <button id="btn-repeat" class="pod-btn pod-btn-sm" title="Répéter" onclick="toggleRepeat()">
-            <i id="icon-repeat" class="fa-solid fa-repeat" style="font-size:.7rem; color:#aaa;"></i>
-        </button>
-    </div>
-
-    <!-- Volume -->
-    <div class="flex items-center gap-2 px-1">
-        <button onclick="toggleMute()" class="pod-btn pod-btn-sm" aria-label="Mute">
-            <i id="icon-vol" class="fa-solid fa-volume-low" style="font-size:.7rem;"></i>
-        </button>
-        <input id="vol-slider" type="range" class="vol-slider" min="0" max="100" value="80"
-               oninput="updateVolume(this.value)" aria-label="Volume">
-        <span id="vol-label" class="text-[10px] font-lcd" style="color:#888; min-width:26px; text-align:right;">80</span>
-    </div>
-
-    <!-- Contrôles secondaires -->
-    <div class="flex justify-between items-center px-1 pt-1"
-         style="border-top:1px solid rgba(0,0,0,.06);">
-        <button class="pod-btn pod-btn-sm" title="Télécharger">
-            <i class="fa-solid fa-cloud-arrow-down" style="font-size:.7rem; color:#aaa;"></i>
-        </button>
-        <button class="pod-btn pod-btn-sm" title="Ouvrir sur plateformes">
-            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.7rem; color:#aaa;"></i>
-        </button>
-        <button class="pod-btn pod-btn-sm" title="File d'attente">
-            <i class="fa-solid fa-list-ul" style="font-size:.7rem; color:#aaa;"></i>
-        </button>
-        <button class="pod-btn pod-btn-sm" title="Partager">
-            <i class="fa-solid fa-share-nodes" style="font-size:.7rem; color:#aaa;"></i>
-        </button>
     </div>
 </div>
 
 <script>
-    /* ════════════ STATE ════════════ */
-    let playing=false, elapsed=0, total=0, ticker;
-    let shuffleOn=false, repeatOn=false, muted=false, volume=80;
-    let isSeeking=false, isDragging=false, dragOX=0, dragOY=0;
-    const playlist = [];
-    let playlistIdx = 0;
+/* ════════════════════════════════════════════════════════════
+   POLIMIX — moteur réel (lecture HLS + données + likes)
+   ════════════════════════════════════════════════════════════ */
 
-    /* ════════════ DOM ════════════ */
-    const pod          = document.getElementById('polimix-pod');
-    const podTab       = document.getElementById('pod-tab');
-    const dragHandle   = document.getElementById('drag-handle');
-    const podViz       = document.getElementById('pod-viz');
-    const podLed       = document.getElementById('pod-led');
-    const tabLed       = document.getElementById('tab-led');
-    const tabTitle     = document.getElementById('tab-title');
-    const tabFill      = document.getElementById('tab-fill');
-    const lcdTitle     = document.getElementById('lcd-title');
-    const lcdArtist    = document.getElementById('lcd-artist');
-    const lcdTime      = document.getElementById('lcd-time');
-    const lcdTotal     = document.getElementById('lcd-total');
-    const timeCurrent  = document.getElementById('time-current');
-    const timeTotal    = document.getElementById('time-total');
-    const progressTrack= document.getElementById('progress-track');
-    const progressFill = document.getElementById('progress-fill');
-    const progressThumb= document.getElementById('progress-thumb');
-    const iconPlay     = document.getElementById('icon-play');
-    const iconPause    = document.getElementById('icon-pause');
-    const volSlider    = document.getElementById('vol-slider');
-    const volLabel     = document.getElementById('vol-label');
-    const iconVol      = document.getElementById('icon-vol');
+/* ---------- ÉTAT ---------- */
+const state = {
+    tracks: [],            // tous les morceaux, à plat
+    byId: {},              // id -> track
+    order: [],             // ids dans l'ordre d'affichage (= playlist par défaut)
+    albums: [],
+    artistes: [],          // [{nom, ids:[...]}] construit depuis les métadonnées
+    artistesMap: {},       // nom -> [ids]
+    polimix: null,
+    descriptions: { albums:{}, tracks:{}, artistes:{} }
+};
+let currentId = null, currentQueue = [], playing = false;
+let shuffleOn = false, repeatOn = false, muted = false, volume = 80;
+let playCounted = false;                 // la lecture en cours a-t-elle déjà été comptée ?
+const PLAY_THRESHOLD = 30;               // une lecture = 30 s d'écoute (standard streaming)
 
-    /* ════════════ MODAL ════════════ */
-    function openAbout()  { document.getElementById('modal-about').classList.add('open'); }
-    function closeAbout(e) {
-        if (!e || e.target === document.getElementById('modal-about'))
-            document.getElementById('modal-about').classList.remove('open');
-    }
-    document.addEventListener('keydown', e => { if(e.key==='Escape') closeAbout(); });
+/* ---------- AUDIO ---------- */
+const audio = new Audio();
+audio.preload = 'metadata';
+audio.volume = volume/100;
+let hls = null;
 
-    /* ════════════ POD : RÉDUIRE / AGRANDIR ════════════ */
-    function minimizePod() {
-        pod.style.display = 'none';
-        podTab.style.display = 'flex';
-    }
-    function expandPod() {
-        podTab.style.display = 'none';
-        pod.style.display = 'flex';
-    }
+/* ---------- DOM ---------- */
+const $ = id => document.getElementById(id);
+const playerBar=$('player-bar'), barCover=$('bar-cover');
+const lcdTitle=$('lcd-title'), lcdArtist=$('lcd-artist');
+const timeCurrent=$('time-current'), timeTotal=$('time-total');
+const progressTrack=$('progress-track'), progressFill=$('progress-fill'), progressThumb=$('progress-thumb');
+const iconPlay=$('icon-play'), iconPause=$('icon-pause');
+const volSlider=$('vol-slider'), volLabel=$('vol-label'), iconVol=$('icon-vol');
 
-    /* ════════════ DRAG ════════════ */
-    dragHandle.addEventListener('mousedown', e => {
-        if (e.target.closest('button')) return;
-        isDragging = true;
-        const r = pod.getBoundingClientRect();
-        dragOX = e.clientX - r.left;
-        dragOY = e.clientY - r.top;
-        pod.style.transition = 'none';
-        pod.style.right = 'auto'; pod.style.bottom = 'auto';
-        pod.style.left = r.left + 'px'; pod.style.top = r.top + 'px';
-        e.preventDefault();
+/* ════════════════════════════════════════════════════════════
+   COUCHE STATS (likes + lectures) — PARTAGÉE via Cloudflare Worker
+   - Compteurs likes/plays = source serveur (partagée entre tous).
+   - "Mes likes" (quel morceau J'AI aimé) = local à l'appareil.
+   - Mise à jour optimiste : l'UI réagit tout de suite, le serveur suit.
+   ════════════════════════════════════════════════════════════ */
+const STATS_API = 'https://polimix-stats.xipilom.workers.dev';
+const MINE_KEY  = 'polimix_mylikes_v1';
+let statsCache = { likes:{}, plays:{} };     // miroir mémoire des compteurs serveur
+
+function getCounts(){ return statsCache.likes || {}; }
+function getPlays(){ return statsCache.plays || {}; }
+function getMine(){ try{return JSON.parse(localStorage.getItem(MINE_KEY)||'{}');}catch(e){return {};} }
+function saveMine(m){ localStorage.setItem(MINE_KEY, JSON.stringify(m)); }
+
+// Charge les compteurs partagés au démarrage
+async function loadStats(){
+    try {
+        const r = await fetch(STATS_API + '/stats', { cache:'no-store' });
+        if(r.ok){ const d = await r.json(); statsCache = { likes:d.likes||{}, plays:d.plays||{} }; }
+    } catch(e){ console.warn('Stats serveur injoignables, compteurs à 0', e); }
+}
+// Envoi non bloquant vers le serveur
+function sendStat(path, id){
+    fetch(STATS_API + path, {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id })
+    }).catch(e=>console.warn('Envoi stat échoué', path, e));
+}
+
+function toggleLike(id){
+    const mine=getMine();
+    if(mine[id]){ delete mine[id]; statsCache.likes[id]=Math.max(0,(statsCache.likes[id]||1)-1); sendStat('/unlike', id); }
+    else { mine[id]=1; statsCache.likes[id]=(statsCache.likes[id]||0)+1; sendStat('/like', id); }
+    saveMine(mine);
+    refreshStatsUI(); renderRanking();
+}
+function likeCurrent(){ if(currentId) toggleLike(currentId); }
+
+// Une lecture comptée une seule fois, après 30 s d'écoute réelle.
+function addPlay(id){
+    statsCache.plays[id]=(statsCache.plays[id]||0)+1; sendStat('/play', id);
+    refreshStatsUI(); renderRanking();
+}
+
+// Formate les grands nombres : 1234 -> 1,2 k
+function fmtNum(n){ n=n||0; return n>=1000 ? (n/1000).toFixed(n>=10000?0:1).replace('.',',')+' k' : ''+n; }
+
+function refreshStatsUI(){
+    const counts=getCounts(), mine=getMine(), plays=getPlays();
+    document.querySelectorAll('.like-btn').forEach(btn=>{
+        const id=btn.dataset.id;
+        btn.classList.toggle('liked', !!mine[id]);
+        const c=btn.querySelector('.like-count'); if(c) c.textContent=fmtNum(counts[id]);
+        const ic=btn.querySelector('i'); if(ic) ic.className=(mine[id]?'fa-solid':'fa-regular')+' fa-heart';
     });
-    document.addEventListener('mousemove', e => {
-        if (!isDragging) return;
-        let x = e.clientX - dragOX;
-        let y = e.clientY - dragOY;
-        x = Math.max(0, Math.min(window.innerWidth  - pod.offsetWidth,  x));
-        y = Math.max(0, Math.min(window.innerHeight - pod.offsetHeight, y));
-        pod.style.left = x + 'px'; pod.style.top = y + 'px';
+    document.querySelectorAll('.play-count').forEach(el=>{
+        el.textContent=fmtNum(plays[el.dataset.id]);
     });
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-        pod.style.transition = '';
-    });
-
-    /* Touch drag */
-    dragHandle.addEventListener('touchstart', e => {
-        if (e.target.closest('button')) return;
-        isDragging = true;
-        const r = pod.getBoundingClientRect();
-        dragOX = e.touches[0].clientX - r.left;
-        dragOY = e.touches[0].clientY - r.top;
-        pod.style.right='auto'; pod.style.bottom='auto';
-        pod.style.left=r.left+'px'; pod.style.top=r.top+'px';
-    }, {passive:true});
-    document.addEventListener('touchmove', e => {
-        if (!isDragging) return;
-        let x = e.touches[0].clientX - dragOX;
-        let y = e.touches[0].clientY - dragOY;
-        x = Math.max(0, Math.min(window.innerWidth  - pod.offsetWidth,  x));
-        y = Math.max(0, Math.min(window.innerHeight - pod.offsetHeight, y));
-        pod.style.left=x+'px'; pod.style.top=y+'px';
-    }, {passive:true});
-    document.addEventListener('touchend', () => { isDragging=false; });
-
-    /* ════════════ SEEK ════════════ */
-    function seekFromEvent(e) {
-        const r = progressTrack.getBoundingClientRect();
-        const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
-        elapsed = Math.floor(pct * total);
-        refreshProg();
+    // bouton like de la barre lecteur
+    const podIc=$('icon-pod-like');
+    if(podIc){
+        const liked=!!(currentId && getMine()[currentId]);
+        podIc.className=(liked?'fa-solid':'fa-regular')+' fa-heart';
+        podIc.style.color=liked?'#fb7185':'';
     }
-    progressTrack.addEventListener('mousedown', e => { isSeeking=true; seekFromEvent(e); });
-    document.addEventListener('mousemove',      e => { if(isSeeking) seekFromEvent(e); });
-    document.addEventListener('mouseup',        ()=> { isSeeking=false; });
+}
 
-    /* ════════════ VOLUME ════════════ */
-    function updateVolume(v) {
-        volume = +v; volLabel.textContent = v;
-        muted = false;
-        const pct = v + '%';
-        volSlider.style.background = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${pct}, #d0d0e0 ${pct})`;
-        iconVol.className = v==0 ? 'fa-solid fa-volume-xmark' : v<50 ? 'fa-solid fa-volume-low' : 'fa-solid fa-volume-high';
-        iconVol.style.fontSize = '.7rem';
-    }
-    function toggleMute() {
-        muted = !muted;
-        if (muted) {
-            volSlider.value = 0; updateVolume(0);
-        } else {
-            volSlider.value = volume||80; updateVolume(volume||80);
+/* ════════════════════════════════════════════════════════════
+   CHARGEMENT DES DONNÉES
+   ════════════════════════════════════════════════════════════ */
+async function loadJSON(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error(url); return r.json(); }
+
+/* ---------- ARTISTES : décomposition fidèle aux métadonnées (champ "artiste" des track.json) ---------- */
+// Fusionne les variantes de casse / orthographe vers un nom d'affichage unique.
+const ARTIST_ALIAS = { "a.kali":"A.Kali", "xipia":"XipIA", "xipilom":"Xipilom",
+                       "josh06":"Josh06", "cow":"Cow", "m.b":"M.B", "br.j":"Br.J" };
+function splitArtists(s){
+    if(!s) return [];
+    return s.split(/\s*&\s*|\s+/).map(x=>x.trim()).filter(Boolean)   // sépare sur & ET sur espaces
+            .map(x=>ARTIST_ALIAS[x.toLowerCase()]||x);
+}
+function buildArtists(){
+    const map={};
+    state.tracks.forEach(t=>(t.artistes||[]).forEach(a=>{ (map[a]=map[a]||[]).push(t.id); }));
+    state.artistesMap = map;
+    state.artistes = Object.keys(map)
+        .sort((a,b)=> map[b].length-map[a].length || a.localeCompare(b))   // + de morceaux d'abord
+        .map(nom=>({ nom, ids:map[nom] }));
+}
+
+async function boot(){
+    try {
+        const [idx, polimix, descs] = await Promise.all([
+            loadJSON('musique/albums.json'),
+            loadJSON('data/polimix.json').catch(()=>({label:{},artistes:[]})),
+            loadJSON('data/descriptions.json').catch(()=>({albums:{},tracks:{},artistes:{}})),
+            loadStats()   // compteurs partagés (Cloudflare)
+        ]);
+        state.polimix = polimix;
+        state.descriptions = descs;
+
+        for(const a of idx.albums){
+            const man = await loadJSON(`musique/${a.dossier}/${a.manifest}`);
+            // a (albums.json) prioritaire : sa "pochette" ne doit pas être écrasée par le null de album.json
+            const album = { ...man, ...a };
+            state.albums.push(album);
+            const pistes = man.pistes||[];
+            // Charge la fiche track.json de chaque morceau pour son artiste RÉEL
+            const fiches = await Promise.all(pistes.map(p=>
+                loadJSON(`musique/${a.dossier}/${p.dossier}/track.json`).catch(()=>({}))
+            ));
+            pistes.forEach((p,i)=>{
+                const id = `${a.dossier}/${p.dossier}`;
+                const artisteBrut = fiches[i].artiste || man.artiste_album || 'Polimix';
+                const t = {
+                    id, num:p.numero_piste, titre:p.titre,
+                    duree:p.duree_secondes,
+                    hls:`musique/${a.dossier}/${p.fichier_hls}`,
+                    albumId:a.id, albumNom:man.album,
+                    artiste:artisteBrut,
+                    artistes:splitArtists(artisteBrut),
+                    pochette:a.pochette||''
+                };
+                state.tracks.push(t); state.byId[id]=t; state.order.push(id);
+            });
         }
+        buildArtists();
+        renderAlbum(state.albums[0]);
+        renderArtists();
+        renderRanking();
+        renderTicker();
+        renderAbout();
+        refreshStatsUI();
+    } catch(e){
+        $('track-list').innerHTML = '<div class="text-red-400 text-sm py-8 text-center">Impossible de charger les morceaux. (Ouvre le site via un serveur, pas en double-clic sur le fichier.)</div>';
+        console.error(e);
     }
-    updateVolume(80);
+}
 
-    /* ════════════ PLAYLIST ════════════ */
-    function playTrack(title, artist, timeStr) {
-        const existing = playlist.findIndex(t => t.title===title);
-        if (existing === -1) { playlist.push({title,artist,timeStr}); playlistIdx=playlist.length-1; }
-        else playlistIdx = existing;
-        loadTrack(playlist[playlistIdx]);
-        if (pod.style.display==='none') expandPod();
-        if (!playing) togglePlay();
-    }
-    function loadTrack(t) {
-        const [m,s] = t.timeStr.split(':').map(Number);
-        total=m*60+s; elapsed=0;
-        lcdTitle.textContent=t.title; lcdArtist.textContent=t.artist;
-        tabTitle.textContent=t.title;
-        const mm=Math.floor(total/60), ss=total%60;
-        lcdTotal.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
-        timeTotal.textContent=mm+':'+String(ss).padStart(2,'0');
-        refreshProg();
-    }
-    function prevTrack() {
-        if(playlist.length===0) return;
-        playlistIdx = (playlistIdx-1+playlist.length)%playlist.length;
-        loadTrack(playlist[playlistIdx]);
-    }
-    function nextTrack() {
-        if(playlist.length===0) return;
-        playlistIdx = shuffleOn ? Math.floor(Math.random()*playlist.length) : (playlistIdx+1)%playlist.length;
-        loadTrack(playlist[playlistIdx]);
-    }
+/* ════════════════════════════════════════════════════════════
+   RENDU
+   ════════════════════════════════════════════════════════════ */
+function fmt(sec){ sec=Math.floor(sec||0); const m=Math.floor(sec/60), s=sec%60; return m+':'+String(s).padStart(2,'0'); }
 
-    /* ════════════ PLAY / PAUSE ════════════ */
-    function togglePlay() {
-        playing=!playing;
-        if (playing) {
-            iconPlay.classList.add('icon-hidden'); iconPause.classList.remove('icon-hidden');
-            setLed(true); podViz.classList.remove('paused');
-            clearInterval(ticker);
-            ticker = setInterval(() => {
-                if (elapsed < total) { elapsed++; refreshProg(); }
-                else if (repeatOn) { elapsed=0; }
-                else { togglePlay(); elapsed=0; refreshProg(); }
-            }, 1000);
-        } else {
-            iconPlay.classList.remove('icon-hidden'); iconPause.classList.add('icon-hidden');
-            setLed(false); podViz.classList.add('paused');
-            clearInterval(ticker);
-        }
-    }
+function renderAlbum(album){
+    const desc = (state.descriptions.albums?.[album.id]?.description)||'';
+    $('album-header').innerHTML = `
+      <div class="flex flex-col sm:flex-row gap-6 items-start">
+        <div class="album-cover w-44 h-44 sm:w-52 sm:h-52">
+          <img src="${album.pochette}" alt="${album.album}">
+        </div>
+        <div class="flex-1 min-w-0 pt-1">
+          <p class="text-[11px] tracking-widest uppercase" style="color:var(--accent-hi);">Album · ${album.annee||''} · ${album.genre||''}</p>
+          <h2 class="section-title text-5xl md:text-6xl tracking-wider text-white leading-none mt-1">${album.album}</h2>
+          <p class="text-zinc-400 text-sm mt-2">${album.artiste_album||''}</p>
+          <p class="text-zinc-600 text-xs mt-1">${album.nombre_pistes||state.tracks.length} morceaux</p>
+          ${desc ? `<p class="text-zinc-400 text-sm mt-4 leading-relaxed max-w-2xl">${desc}</p>` : ''}
+          <div class="mt-5 flex gap-3">
+            <button onclick="playFirst()" class="px-6 py-2.5 rounded-full font-semibold text-sm transition flex items-center gap-2"
+                    style="background:linear-gradient(90deg,var(--accent),var(--accent-hi)); color:white;">
+              <i class="fa-solid fa-play"></i> Écouter
+            </button>
+            <button onclick="shufflePlay()" class="px-5 py-2.5 rounded-full font-semibold text-sm transition flex items-center gap-2"
+                    style="background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:white;">
+              <i class="fa-solid fa-shuffle"></i> Aléatoire
+            </button>
+          </div>
+        </div>
+      </div>`;
 
-    /* ════════════ SHUFFLE / REPEAT ════════════ */
-    function toggleShuffle() {
-        shuffleOn=!shuffleOn;
-        document.getElementById('icon-shuffle').style.color = shuffleOn ? 'var(--accent)' : '#aaa';
-    }
-    function toggleRepeat() {
-        repeatOn=!repeatOn;
-        document.getElementById('icon-repeat').style.color = repeatOn ? 'var(--accent)' : '#aaa';
-    }
+    $('track-list').innerHTML = state.tracks
+        .map(t=>trackRowHTML(t, `playTrackById('${t.id}', state.order)`)).join('');
+}
 
-    /* ════════════ HELPERS ════════════ */
-    function setLed(on) {
-        const c=on?'#22c55e':'#ef4444', g=on?'#22c55e':'red';
-        podLed.style.cssText  = `background:${c}; box-shadow:0 0 5px ${g};`;
-        tabLed.style.cssText  = `background:${c}; box-shadow:0 0 6px ${g}; border-radius:50%; width:10px; height:10px; flex-shrink:0;`;
+function renderArtists(){
+    $('artist-grid').innerHTML = state.artistes.map(a=>{
+        const d = state.descriptions.artistes?.[a.nom]?.description || '';
+        const initial = (a.nom||'?').trim().charAt(0).toUpperCase();
+        const esc = a.nom.replace(/'/g,"\\'");
+        return `
+        <div class="glass-card rounded-2xl p-5 flex gap-4 items-start cursor-pointer" onclick="focusArtist('${esc}')">
+          <div class="artist-avatar">${initial}</div>
+          <div class="min-w-0">
+            <h4 class="font-bold text-white text-lg leading-tight">${a.nom}</h4>
+            <p class="text-[11px] uppercase tracking-wider" style="color:var(--accent-hi);">${a.ids.length} morceau${a.ids.length>1?'x':''}</p>
+            ${d ? `<p class="text-zinc-400 text-xs mt-2 leading-relaxed">${d}</p>` : `<p class="text-zinc-600 text-xs mt-2 italic">Présentation à venir.</p>`}
+          </div>
+        </div>`;
+    }).join('');
+}
+
+function trackRowHTML(t, queueExpr){
+    const counts=getCounts(), mine=getMine(), plays=getPlays();
+    return `
+      <div class="track-row" data-id="${t.id}" onclick="${queueExpr}">
+        <div class="track-num">
+          <span class="num">${t.num}</span>
+          <i class="fa-solid fa-play play-ic"></i>
+          <div class="track-eq"><span class="b"></span><span class="b"></span><span class="b"></span></div>
+        </div>
+        <div class="track-main">
+          <div class="track-title">${t.titre}</div>
+          <div class="track-sub">${t.artiste}</div>
+        </div>
+        <span class="play-stat" title="Lectures"><i class="fa-solid fa-headphones"></i><span class="play-count" data-id="${t.id}">${fmtNum(plays[t.id])}</span></span>
+        <div class="track-dur">${fmt(t.duree)}</div>
+        <button class="like-btn ${mine[t.id]?'liked':''}" data-id="${t.id}" onclick="event.stopPropagation();toggleLike('${t.id}')" title="J'aime">
+          <i class="${mine[t.id]?'fa-solid':'fa-regular'} fa-heart"></i><span class="like-count">${fmtNum(counts[t.id])}</span>
+        </button>
+      </div>`;
+}
+
+function focusArtist(nom){
+    const ids = state.artistesMap[nom]||[];
+    const esc = nom.replace(/'/g,"\\'");
+    const rows = ids.map(id=>state.byId[id])
+        .map(t=>trackRowHTML(t, `playArtist('${esc}','${t.id}')`)).join('');
+    $('artist-focus').innerHTML = `
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="artist-avatar" style="width:48px;height:48px;font-size:1.3rem;">${nom.charAt(0).toUpperCase()}</div>
+          <div>
+            <h4 class="font-bebas text-2xl tracking-wider text-white leading-none">${nom}</h4>
+            <p class="text-zinc-500 text-xs mt-0.5">${ids.length} morceau${ids.length>1?'x':''}</p>
+          </div>
+        </div>
+        <button onclick="playArtist('${esc}')" class="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"
+                style="background:linear-gradient(90deg,var(--accent),var(--accent-hi)); color:white;">
+          <i class="fa-solid fa-play"></i> Tout écouter
+        </button>
+      </div>
+      <div class="space-y-0.5">${rows}</div>`;
+    $('artist-focus').style.display='block';
+    $('artist-focus').scrollIntoView({behavior:'smooth', block:'nearest'});
+    markPlayingRow(); refreshStatsUI();
+}
+function playArtist(nom, id){
+    const ids = state.artistesMap[nom]||[];
+    if(ids.length) playTrackById(id||ids[0], ids);
+}
+
+function renderRanking(){
+    const counts=getCounts(), plays=getPlays();
+    // Tri par likes (critère choisi), départage par lectures
+    const sorted=[...state.tracks].sort((a,b)=>
+        (counts[b.id]||0)-(counts[a.id]||0) || (plays[b.id]||0)-(plays[a.id]||0));
+    $('ranking').innerHTML = sorted.map((t,i)=>`
+      <div class="rank-row" onclick="playTrackById('${t.id}', state.order)" style="cursor:pointer;">
+        <div class="rank-pos">${i+1}</div>
+        <div class="flex-1 min-w-0">
+          <div class="track-title">${t.titre}</div>
+          <div class="track-sub">${t.artiste}</div>
+        </div>
+        <div class="flex items-center gap-1.5 text-sm" style="color:#9ca3af;" title="Lectures">
+          <i class="fa-solid fa-headphones text-xs"></i><span style="font-variant-numeric:tabular-nums;">${fmtNum(plays[t.id])}</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-sm ml-4" style="color:#fb7185;" title="J'aime">
+          <i class="fa-solid fa-heart text-xs"></i><span style="font-variant-numeric:tabular-nums;">${fmtNum(counts[t.id])}</span>
+        </div>
+      </div>`).join('');
+}
+
+function renderTicker(){
+    const titles = state.tracks.map(t=>t.titre);
+    $('ticker').textContent = '  ▶ '+titles.join('   ▶ ')+'   ▶ POLIMIX RECORD  ';
+}
+
+function renderAbout(){
+    const d = state.polimix?.label?.description;
+    if(d){
+        $('about-body').innerHTML = `<p>${d.replace(/\n\n/g,'</p><p>')}</p>
+            <div class="pt-2 border-t border-zinc-800 flex items-center gap-3 mt-4">
+              <i class="fa-solid fa-skull text-zinc-500"></i>
+              <p class="text-zinc-500 text-xs">Polimix Record — fondé par Xipilom · xipinow.com</p>
+            </div>`;
     }
-    function fmt(sec) {
-        const m=Math.floor(sec/60), s=Math.floor(sec%60);
-        return m+':'+String(s).padStart(2,'0');
+}
+
+/* ════════════════════════════════════════════════════════════
+   LECTEUR HLS
+   ════════════════════════════════════════════════════════════ */
+function attachSource(url){
+    if(hls){ hls.destroy(); hls=null; }
+    if(audio.canPlayType('application/vnd.apple.mpegurl')){
+        audio.src=url;                       // Safari / iOS : HLS natif
+    } else if(window.Hls && Hls.isSupported()){
+        hls=new Hls({maxBufferLength:30}); hls.loadSource(url); hls.attachMedia(audio);
+    } else {
+        audio.src=url;                       // dernier recours
     }
-    function refreshProg() {
-        lcdTime.textContent = String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');
-        timeCurrent.textContent = fmt(elapsed);
-        const p = total>0 ? (elapsed/total)*100 : 0;
-        progressFill.style.width  = p+'%';
-        progressThumb.style.left  = p+'%';
-        tabFill.style.height      = p+'%';
+}
+
+function playTrackById(id, queue){
+    const t=state.byId[id]; if(!t) return;
+    currentQueue = (queue && queue.length) ? queue : state.order;
+    currentId=id;
+    playCounted=false;                   // nouvelle écoute : remet le compteur de lecture à zéro
+    attachSource(t.hls);
+    lcdTitle.textContent=t.titre||'';
+    lcdArtist.textContent=t.artiste||'';
+    if(barCover) barCover.src=t.pochette||'';
+    timeTotal.textContent=fmt(t.duree);
+    audio.play().catch(()=>{});
+    markPlayingRow(); refreshStatsUI();
+}
+function playFirst(){ if(state.order.length) playTrackById(state.order[0], state.order); }
+function shufflePlay(){ shuffleOn=true; $('icon-shuffle').style.color='var(--accent)';
+    if(state.order.length) playTrackById(state.order[Math.floor(Math.random()*state.order.length)], state.order); }
+
+function markPlayingRow(){
+    document.querySelectorAll('.track-row').forEach(r=>r.classList.toggle('playing', r.dataset.id===currentId));
+}
+
+function togglePlay(){
+    if(!currentId){ playFirst(); return; }
+    if(audio.paused) audio.play().catch(()=>{}); else audio.pause();
+}
+function prevTrack(){
+    if(!currentId) return playFirst();
+    const q=currentQueue.length?currentQueue:state.order;
+    const i=q.indexOf(currentId);
+    playTrackById(q[(i-1+q.length)%q.length], q);
+}
+function nextTrack(){
+    if(!currentId) return playFirst();
+    const q=currentQueue.length?currentQueue:state.order;
+    if(shuffleOn){ playTrackById(q[Math.floor(Math.random()*q.length)], q); return; }
+    const i=q.indexOf(currentId);
+    playTrackById(q[(i+1)%q.length], q);
+}
+
+/* ---- événements audio ---- */
+audio.addEventListener('play', ()=>{
+    playing=true; iconPlay.classList.add('icon-hidden'); iconPause.classList.remove('icon-hidden');
+    playerBar.classList.add('playing');
+});
+audio.addEventListener('pause', ()=>{
+    playing=false; iconPlay.classList.remove('icon-hidden'); iconPause.classList.add('icon-hidden');
+    playerBar.classList.remove('playing');
+});
+audio.addEventListener('loadedmetadata', ()=>{
+    if(isFinite(audio.duration)){ timeTotal.textContent=fmt(audio.duration); }
+});
+audio.addEventListener('timeupdate', refreshProg);
+audio.addEventListener('ended', ()=>{ if(repeatOn){ audio.currentTime=0; audio.play(); } else nextTrack(); });
+
+function refreshProg(){
+    const cur=audio.currentTime||0, tot=audio.duration||state.byId[currentId]?.duree||0;
+    timeCurrent.textContent=fmt(cur);
+    const p= tot>0 ? (cur/tot)*100 : 0;
+    progressFill.style.width=p+'%'; progressThumb.style.left=p+'%';
+    // Compte la lecture après 30 s d'écoute (ou 90% du morceau s'il dure moins)
+    if(!playCounted && currentId && cur >= Math.min(PLAY_THRESHOLD, (tot||PLAY_THRESHOLD)*0.9)){
+        playCounted=true; addPlay(currentId);
     }
+}
+
+/* ════════════════════════════════════════════════════════════
+   CONTRÔLES UI
+   ════════════════════════════════════════════════════════════ */
+function toggleShuffle(){ shuffleOn=!shuffleOn; $('icon-shuffle').style.color=shuffleOn?'var(--accent)':'#aaa'; }
+function toggleRepeat(){ repeatOn=!repeatOn; $('icon-repeat').style.color=repeatOn?'var(--accent)':'#aaa'; }
+
+function updateVolume(v){
+    volume=+v; volLabel.textContent=v; muted=false; audio.muted=false; audio.volume=v/100;
+    const pct=v+'%';
+    volSlider.style.background=`linear-gradient(90deg, var(--accent) 0%, var(--accent) ${pct}, #d0d0e0 ${pct})`;
+    iconVol.className=v==0?'fa-solid fa-volume-xmark':v<50?'fa-solid fa-volume-low':'fa-solid fa-volume-high';
+}
+function toggleMute(){ muted=!muted; audio.muted=muted;
+    if(muted){ volSlider.value=0; updateVolume(0); muted=true; audio.muted=true; }
+    else { volSlider.value=volume||80; updateVolume(volume||80); } }
+updateVolume(80);
+
+/* ---- seek ---- */
+let isSeeking=false;
+function seekFromEvent(e){
+    const r=progressTrack.getBoundingClientRect();
+    const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+    const pct=Math.max(0,Math.min(1,x/r.width));
+    const tot=audio.duration||state.byId[currentId]?.duree||0;
+    if(tot){ audio.currentTime=pct*tot; refreshProg(); }
+}
+progressTrack.addEventListener('mousedown',e=>{isSeeking=true;seekFromEvent(e);});
+document.addEventListener('mousemove',e=>{if(isSeeking)seekFromEvent(e);});
+document.addEventListener('mouseup',()=>{isSeeking=false;});
+progressTrack.addEventListener('touchstart',e=>{isSeeking=true;seekFromEvent(e);},{passive:true});
+progressTrack.addEventListener('touchmove',e=>{if(isSeeking)seekFromEvent(e);},{passive:true});
+progressTrack.addEventListener('touchend',()=>{isSeeking=false;});
+
+/* ════════════════════════════════════════════════════════════
+   MODAL « Qui sommes-nous »
+   ════════════════════════════════════════════════════════════ */
+function openAbout(){ $('modal-about').classList.add('open'); }
+function closeAbout(e){ if(!e||e.target===$('modal-about')) $('modal-about').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeAbout(); });
+
+/* ---- GO ---- */
+boot();
 </script>
 </body>
 </html>

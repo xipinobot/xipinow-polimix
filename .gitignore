@@ -1,0 +1,8 @@
+# Déchets techniques à ne jamais publier
+node_modules/
+.wrangler/
+_chk.js
+_engine_check.js
+*.log
+.DS_Store
+Thumbs.db

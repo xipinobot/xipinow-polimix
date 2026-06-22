@@ -1,0 +1,16 @@
+{
+  "_note": "Textes de presentation. albums: par album. tracks: cle 'albumDossier/trackDossier'. artistes: cle = nom d'artiste (XipIA, Xipilom, A.Kali, Josh06, Br.J, M.B, Cow). Rempli pendant le questionnaire (phase 5).",
+  "albums": {
+    "tango-neo-classico-futur": { "description": "" }
+  },
+  "tracks": {},
+  "artistes": {
+    "XipIA": { "description": "" },
+    "Xipilom": { "description": "" },
+    "A.Kali": { "description": "" },
+    "Josh06": { "description": "" },
+    "Br.J": { "description": "" },
+    "M.B": { "description": "" },
+    "Cow": { "description": "" }
+  }
+}

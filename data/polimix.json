@@ -1,0 +1,8 @@
+{
+  "_note": "Contenu editorial de Polimix. La liste des artistes n'est PAS ici : elle est construite automatiquement depuis le champ 'artiste' des track.json. Les descriptions d'artistes vont dans data/descriptions.json (cle = nom d'artiste). Rempli pendant le questionnaire (phase 5).",
+  "label": {
+    "nom": "Polimix Record",
+    "baseline": "Label Alternatif",
+    "description": ""
+  }
+}

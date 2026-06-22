@@ -1,0 +1,10 @@
+{
+  "albums": [
+    {
+      "id": "tango-neo-classico-futur",
+      "dossier": "tango-neo-classico-futur",
+      "manifest": "album.json",
+      "pochette": "assets/pochette-tango-neo-classico-futur.webp"
+    }
+  ]
+}

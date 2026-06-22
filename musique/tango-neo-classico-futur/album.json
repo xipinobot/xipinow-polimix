@@ -1,0 +1,213 @@
+{
+  "album": "Tango-Neo-Classico-Futur",
+  "artiste_album": "Xipilom Feat: Josh06 - MB - AlaKAli",
+  "annee": "2026",
+  "genre": "Tango",
+  "pochette": null,
+  "nombre_pistes": 29,
+  "pistes": [
+    {
+      "numero_piste": 1,
+      "titre": "Gare au gorille",
+      "dossier": "01-gare-au-gorille",
+      "duree_secondes": 366.536,
+      "fichier_hls": "01-gare-au-gorille/audio.m3u8"
+    },
+    {
+      "numero_piste": 2,
+      "titre": "Glittan GO1",
+      "dossier": "02-glittan-go1",
+      "duree_secondes": 184.16,
+      "fichier_hls": "02-glittan-go1/audio.m3u8"
+    },
+    {
+      "numero_piste": 3,
+      "titre": "La Cure de Tango",
+      "dossier": "03-la-cure-de-tango",
+      "duree_secondes": 183.28,
+      "fichier_hls": "03-la-cure-de-tango/audio.m3u8"
+    },
+    {
+      "numero_piste": 4,
+      "titre": "Go Stamp",
+      "dossier": "04-go-stamp",
+      "duree_secondes": 149.946,
+      "fichier_hls": "04-go-stamp/audio.m3u8"
+    },
+    {
+      "numero_piste": 5,
+      "titre": "la danse du crime",
+      "dossier": "05-la-danse-du-crime",
+      "duree_secondes": 208.498,
+      "fichier_hls": "05-la-danse-du-crime/audio.m3u8"
+    },
+    {
+      "numero_piste": 6,
+      "titre": "me and josh tango galactico",
+      "dossier": "06-me-and-josh-tango-galactico",
+      "duree_secondes": 114.64,
+      "fichier_hls": "06-me-and-josh-tango-galactico/audio.m3u8"
+    },
+    {
+      "numero_piste": 7,
+      "titre": "Transgo",
+      "dossier": "07-transgo",
+      "duree_secondes": 199.112,
+      "fichier_hls": "07-transgo/audio.m3u8"
+    },
+    {
+      "numero_piste": 8,
+      "titre": "Basstong",
+      "dossier": "08-basstong",
+      "duree_secondes": 167.96,
+      "fichier_hls": "08-basstong/audio.m3u8"
+    },
+    {
+      "numero_piste": 9,
+      "titre": "Chrome Accordion",
+      "dossier": "09-chrome-accordion",
+      "duree_secondes": 124.8,
+      "fichier_hls": "09-chrome-accordion/audio.m3u8"
+    },
+    {
+      "numero_piste": 10,
+      "titre": "Tango de los catseyes",
+      "dossier": "10-tango-de-los-catseyes",
+      "duree_secondes": 182.28,
+      "fichier_hls": "10-tango-de-los-catseyes/audio.m3u8"
+    },
+    {
+      "numero_piste": 11,
+      "titre": "Californian walk",
+      "dossier": "11-californian-walk",
+      "duree_secondes": 183.08,
+      "fichier_hls": "11-californian-walk/audio.m3u8"
+    },
+    {
+      "numero_piste": 12,
+      "titre": "le cinquieme pas",
+      "dossier": "12-le-cinquieme-pas",
+      "duree_secondes": 231.24,
+      "fichier_hls": "12-le-cinquieme-pas/audio.m3u8"
+    },
+    {
+      "numero_piste": 13,
+      "titre": "La danseuse mysterieuse",
+      "dossier": "13-la-danseuse-mysterieuse",
+      "duree_secondes": 292.419,
+      "fichier_hls": "13-la-danseuse-mysterieuse/audio.m3u8"
+    },
+    {
+      "numero_piste": 14,
+      "titre": "MortalTango",
+      "dossier": "14-mortaltango",
+      "duree_secondes": 224.96,
+      "fichier_hls": "14-mortaltango/audio.m3u8"
+    },
+    {
+      "numero_piste": 15,
+      "titre": "Tango de Vienne",
+      "dossier": "15-tango-de-vienne",
+      "duree_secondes": 214.499,
+      "fichier_hls": "15-tango-de-vienne/audio.m3u8"
+    },
+    {
+      "numero_piste": 16,
+      "titre": "The with duck",
+      "dossier": "16-the-with-duck",
+      "duree_secondes": 152.4,
+      "fichier_hls": "16-the-with-duck/audio.m3u8"
+    },
+    {
+      "numero_piste": 17,
+      "titre": "Trois pattes et un canard",
+      "dossier": "17-trois-pattes-et-un-canard",
+      "duree_secondes": 194.52,
+      "fichier_hls": "17-trois-pattes-et-un-canard/audio.m3u8"
+    },
+    {
+      "numero_piste": 18,
+      "titre": "GANOT1",
+      "dossier": "18-ganot1",
+      "duree_secondes": 69.4,
+      "fichier_hls": "18-ganot1/audio.m3u8"
+    },
+    {
+      "numero_piste": 19,
+      "titre": "Danse encore",
+      "dossier": "19-danse-encore",
+      "duree_secondes": 167.532,
+      "fichier_hls": "19-danse-encore/audio.m3u8"
+    },
+    {
+      "numero_piste": 20,
+      "titre": "Dripangot",
+      "dossier": "20-dripangot",
+      "duree_secondes": 243.16,
+      "fichier_hls": "20-dripangot/audio.m3u8"
+    },
+    {
+      "numero_piste": 21,
+      "titre": "Tango elefante",
+      "dossier": "21-tango-elefante",
+      "duree_secondes": 158.467,
+      "fichier_hls": "21-tango-elefante/audio.m3u8"
+    },
+    {
+      "numero_piste": 22,
+      "titre": "MagoTrain",
+      "dossier": "22-magotrain",
+      "duree_secondes": 190.12,
+      "fichier_hls": "22-magotrain/audio.m3u8"
+    },
+    {
+      "numero_piste": 23,
+      "titre": "Fauve Minuit",
+      "dossier": "23-fauve-minuit",
+      "duree_secondes": 171.28,
+      "fichier_hls": "23-fauve-minuit/audio.m3u8"
+    },
+    {
+      "numero_piste": 24,
+      "titre": "Mariacherie",
+      "dossier": "24-mariacherie",
+      "duree_secondes": 128.44,
+      "fichier_hls": "24-mariacherie/audio.m3u8"
+    },
+    {
+      "numero_piste": 25,
+      "titre": "Metro Tango Boulot",
+      "dossier": "25-metro-tango-boulot",
+      "duree_secondes": 174.92,
+      "fichier_hls": "25-metro-tango-boulot/audio.m3u8"
+    },
+    {
+      "numero_piste": 26,
+      "titre": "Tango Libre del Kalimba",
+      "dossier": "26-tango-libre-del-kalimba",
+      "duree_secondes": 213.089,
+      "fichier_hls": "26-tango-libre-del-kalimba/audio.m3u8"
+    },
+    {
+      "numero_piste": 27,
+      "titre": "GANOT2",
+      "dossier": "27-ganot2",
+      "duree_secondes": 103.52,
+      "fichier_hls": "27-ganot2/audio.m3u8"
+    },
+    {
+      "numero_piste": 28,
+      "titre": "Six cordes pour un Tango",
+      "dossier": "28-six-cordes-pour-un-tango",
+      "duree_secondes": 193.12,
+      "fichier_hls": "28-six-cordes-pour-un-tango/audio.m3u8"
+    },
+    {
+      "numero_piste": 29,
+      "titre": "Tango d oro",
+      "dossier": "29-tango-d-oro",
+      "duree_secondes": 197.76,
+      "fichier_hls": "29-tango-d-oro/audio.m3u8"
+    }
+  ]
+}
