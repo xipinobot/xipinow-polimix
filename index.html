@@ -274,6 +274,14 @@
         .tab-mini-fill { position:absolute; bottom:0; left:0; right:0; background:var(--accent); border-radius:2px; transition:height .5s linear; }
 
         .section-title { font-family:'Bebas Neue',sans-serif; }
+        /* ── SINGLES ─────────────────────────────── */
+        .single-cover { position:relative; width:64px; height:64px; border-radius:14px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:white;
+            background:linear-gradient(135deg,var(--accent),#ec4899); box-shadow:0 0 18px var(--accent-glow); }
+        .single-badge { position:absolute; bottom:-7px; left:50%; transform:translateX(-50%);
+            font-family:'Inter',sans-serif; font-size:8px; font-weight:800; letter-spacing:.08em;
+            padding:1px 6px; border-radius:999px; background:#ec4899; color:white; white-space:nowrap; }
 
         /* ── BARRE LECTEUR (style YouTube, pleine largeur) ─── */
         #player-bar { position:fixed; left:0; right:0; bottom:0; z-index:60;
@@ -351,6 +359,7 @@
     </div>
     <nav class="flex-1 px-3 space-y-1 mt-3">
         <a href="#top"         class="nav-item active"><i class="fa-solid fa-house w-4 text-center"></i>Accueil</a>
+        <a href="#singles"     class="nav-item"><i class="fa-solid fa-bolt w-4 text-center"></i>Nouveautés</a>
         <a href="#album"       class="nav-item"><i class="fa-solid fa-compact-disc w-4 text-center"></i>Album</a>
         <a href="#tous"        class="nav-item"><i class="fa-solid fa-music w-4 text-center"></i>Tous les morceaux</a>
         <a href="#artistes"    class="nav-item"><i class="fa-solid fa-users w-4 text-center"></i>Artistes</a>
@@ -424,6 +433,17 @@
 
     <!-- ── CONTENT ────────────────────────── -->
     <div class="p-6 md:p-8 space-y-14">
+
+        <!-- SINGLES / NOUVEAUTÉS -->
+        <section id="singles" class="scroll-mt-6">
+            <div class="flex items-end justify-between mb-5">
+                <div>
+                    <h3 class="section-title text-3xl tracking-wider text-white">Nouveautés · Singles</h3>
+                    <p class="text-zinc-500 text-xs mt-1">Morceaux hors album — fraîchement sortis</p>
+                </div>
+            </div>
+            <div id="singles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
 
         <!-- ALBUM -->
         <section id="album" class="scroll-mt-6">
@@ -548,6 +568,7 @@ const state = {
     byId: {},              // id -> track
     order: [],             // ids dans l'ordre d'affichage (= playlist par défaut)
     albums: [],
+    singles: [],           // ids des morceaux hors album (rattachés à l'accueil)
     artistes: [],          // [{nom, ids:[...]}] construit depuis les métadonnées
     artistesMap: {},       // nom -> [ids]
     polimix: null,
@@ -651,12 +672,17 @@ function refreshStatsUI(){
 async function loadJSON(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error(url); return r.json(); }
 
 /* ---------- ARTISTES : décomposition fidèle aux métadonnées (champ "artiste" des track.json) ---------- */
-// Fusionne les variantes de casse / orthographe vers un nom d'affichage unique.
+// On sépare les collaborations sur le "&" UNIQUEMENT (pour garder les noms à espaces
+// comme "Taka Tour-muet" intacts). ARTIST_ALIAS fusionne les variantes de casse.
+// LEGACY_SPLIT redécoupe d'anciennes valeurs de l'album collées par un espace.
 const ARTIST_ALIAS = { "a.kali":"A.Kali", "xipia":"XipIA", "xipilom":"Xipilom",
-                       "josh06":"Josh06", "cow":"Cow", "m.b":"M.B", "br.j":"Br.J" };
+                       "josh06":"Josh06", "cow":"Cow", "m.b":"M.B", "br.j":"Br.J",
+                       "taka tour-muet":"Taka Tour-muet", "t.tour-muet":"Taka Tour-muet" };
+const LEGACY_SPLIT = { "Br.J XipIA":["Br.J","XipIA"], "M.B XipIA":["M.B","XipIA"] };
 function splitArtists(s){
     if(!s) return [];
-    return s.split(/\s*&\s*|\s+/).map(x=>x.trim()).filter(Boolean)   // sépare sur & ET sur espaces
+    return s.split(/\s*&\s*/).map(x=>x.trim()).filter(Boolean)   // sépare sur "&" seulement
+            .flatMap(x => LEGACY_SPLIT[x] || [x])
             .map(x=>ARTIST_ALIAS[x.toLowerCase()]||x);
 }
 function buildArtists(){
@@ -682,7 +708,7 @@ async function boot(){
         for(const a of idx.albums){
             const man = await loadJSON(`musique/${a.dossier}/${a.manifest}`);
             // a (albums.json) prioritaire : sa "pochette" ne doit pas être écrasée par le null de album.json
-            const album = { ...man, ...a };
+            const album = { ...man, ...a, trackIds:[] };
             state.albums.push(album);
             const pistes = man.pistes||[];
             // Charge la fiche track.json de chaque morceau pour son artiste RÉEL
@@ -696,15 +722,38 @@ async function boot(){
                     id, num:p.numero_piste, titre:p.titre,
                     duree:p.duree_secondes,
                     hls:`musique/${a.dossier}/${p.fichier_hls}`,
-                    albumId:a.id, albumNom:man.album,
+                    albumId:a.id, albumNom:man.album, isSingle:false,
                     artiste:artisteBrut,
                     artistes:splitArtists(artisteBrut),
                     pochette:a.pochette||''
                 };
                 state.tracks.push(t); state.byId[id]=t; state.order.push(id);
+                album.trackIds.push(id);
             });
         }
+
+        // ── SINGLES (morceaux hors album, rattachés à l'accueil) ──
+        const sIdx = await loadJSON('musique/singles.json').catch(()=>({singles:[]}));
+        for(const s of (sIdx.singles||[])){
+            const hls = s.fichier_hls || 'audio.m3u8';
+            const fiche = await loadJSON(`musique/singles/${s.dossier}/track.json`).catch(()=>({}));
+            const id = `singles/${s.dossier}`;
+            const artisteBrut = fiche.artiste || 'Polimix';
+            const t = {
+                id, num:null, titre:fiche.titre || s.dossier,
+                duree:fiche.duree_secondes,
+                hls:`musique/singles/${s.dossier}/${hls}`,
+                albumId:null, albumNom:'Single', isSingle:true,
+                artiste:artisteBrut,
+                artistes:splitArtists(artisteBrut),
+                pochette:''
+            };
+            state.tracks.push(t); state.byId[id]=t; state.order.push(id);
+            state.singles.push(id);
+        }
+
         buildArtists();
+        renderSingles();
         renderAlbum(state.albums[0]);
         renderAllTracks();
         renderArtists();
@@ -734,7 +783,7 @@ function renderAlbum(album){
           <p class="text-[11px] tracking-widest uppercase" style="color:var(--accent-hi);">Album · ${album.annee||''} · ${album.genre||''}</p>
           <h2 class="section-title text-5xl md:text-6xl tracking-wider text-white leading-none mt-1">${album.album}</h2>
           <p class="text-zinc-400 text-sm mt-2">${album.artiste_album||''}</p>
-          <p class="text-zinc-600 text-xs mt-1">${album.nombre_pistes||state.tracks.length} morceaux</p>
+          <p class="text-zinc-600 text-xs mt-1">${album.trackIds.length} morceau${album.trackIds.length>1?'x':''}</p>
           ${desc ? `<p class="text-zinc-400 text-sm mt-4 leading-relaxed max-w-2xl">${desc}</p>` : ''}
           <div class="mt-5 flex gap-3">
             <button onclick="playFirst()" class="px-6 py-2.5 rounded-full font-semibold text-sm transition flex items-center gap-2"
@@ -749,9 +798,39 @@ function renderAlbum(album){
         </div>
       </div>`;
 
-    $('track-list').innerHTML = state.tracks
-        .map(t=>trackRowHTML(t, `playTrackById('${t.id}', state.order)`)).join('');
+    $('track-list').innerHTML = album.trackIds
+        .map(id=>trackRowHTML(state.byId[id], `playTrackById('${id}', state.albums[0].trackIds)`)).join('');
 }
+
+// Singles : cartes sur l'accueil (pochette générée par défaut)
+function renderSingles(){
+    const cont=$('singles-grid'); if(!cont) return;
+    const sec=$('singles');
+    if(!state.singles.length){ if(sec) sec.style.display='none'; return; }
+    const counts=getCounts(), mine=getMine(), plays=getPlays();
+    cont.innerHTML = state.singles.map(id=>{
+        const t=state.byId[id];
+        const initial=(t.titre||'?').trim().charAt(0).toUpperCase();
+        return `
+        <div class="glass-card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" data-id="${t.id}" onclick="playSingle('${t.id}')">
+          <div class="single-cover">${initial}<span class="single-badge">SINGLE</span></div>
+          <div class="flex-1 min-w-0">
+            <div class="track-title">${t.titre}</div>
+            <div class="track-sub">${t.artiste}</div>
+            <div class="flex items-center gap-3 mt-2 text-[11px]" style="color:#71717a;">
+              <span><i class="fa-solid fa-clock"></i> ${fmt(t.duree)}</span>
+              <span class="play-stat"><i class="fa-solid fa-headphones"></i><span class="play-count" data-id="${t.id}">${fmtNum(plays[t.id])}</span></span>
+            </div>
+          </div>
+          <button class="like-btn ${mine[t.id]?'liked':''}" data-id="${t.id}" onclick="event.stopPropagation();toggleLike('${t.id}')" title="J'aime">
+            <i class="${mine[t.id]?'fa-solid':'fa-regular'} fa-heart"></i><span class="like-count">${fmtNum(counts[t.id])}</span>
+          </button>
+        </div>`;
+    }).join('');
+    markPlayingRow();
+}
+// Joue un single dans la file des singles
+function playSingle(id){ playTrackById(id, state.singles); }
 
 // Liste complète, tous albums confondus, avec tri choisi par l'utilisateur
 function renderAllTracks(){
@@ -902,9 +981,9 @@ function playTrackById(id, queue){
     audio.play().catch(()=>{});
     markPlayingRow(); refreshStatsUI();
 }
-function playFirst(){ if(state.order.length) playTrackById(state.order[0], state.order); }
+function playFirst(){ const q=state.albums[0]?.trackIds||state.order; if(q.length) playTrackById(q[0], q); }
 function shufflePlay(){ shuffleOn=true; $('icon-shuffle').style.color='var(--accent)';
-    if(state.order.length) playTrackById(state.order[Math.floor(Math.random()*state.order.length)], state.order); }
+    const q=state.albums[0]?.trackIds||state.order; if(q.length) playTrackById(q[Math.floor(Math.random()*q.length)], q); }
 
 function markPlayingRow(){
     document.querySelectorAll('.track-row').forEach(r=>r.classList.toggle('playing', r.dataset.id===currentId));

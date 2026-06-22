@@ -1,0 +1,8 @@
+{
+  "_note": "Singles : morceaux hors album, rattachés à l'accueil. Pour ajouter un single : déposer son dossier dans musique/singles/ (avec audio.m3u8 + track.json) puis ajouter une ligne ici. Pour le ranger en album plus tard : le déplacer dans un dossier d'album classique.",
+  "singles": [
+    { "dossier": "03-je-t-aime-i-love-you" },
+    { "dossier": "02-mr-president" },
+    { "dossier": "01-ratatouille-d-andouille" }
+  ]
+}
