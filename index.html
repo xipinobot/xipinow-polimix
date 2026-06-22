@@ -282,6 +282,7 @@
         .single-badge { position:absolute; bottom:-7px; left:50%; transform:translateX(-50%);
             font-family:'Inter',sans-serif; font-size:8px; font-weight:800; letter-spacing:.08em;
             padding:1px 6px; border-radius:999px; background:#ec4899; color:white; white-space:nowrap; }
+        .single-cover-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:14px; }
 
         /* ── BARRE LECTEUR (style YouTube, pleine largeur) ─── */
         #player-bar { position:fixed; left:0; right:0; bottom:0; z-index:60;
@@ -746,7 +747,7 @@ async function boot(){
                 albumId:null, albumNom:'Single', isSingle:true,
                 artiste:artisteBrut,
                 artistes:splitArtists(artisteBrut),
-                pochette:''
+                pochette:s.pochette || ''
             };
             state.tracks.push(t); state.byId[id]=t; state.order.push(id);
             state.singles.push(id);
@@ -811,9 +812,12 @@ function renderSingles(){
     cont.innerHTML = state.singles.map(id=>{
         const t=state.byId[id];
         const initial=(t.titre||'?').trim().charAt(0).toUpperCase();
+        const cover = t.pochette
+            ? `<img src="${t.pochette}" alt="${t.titre}" class="single-cover-img">`
+            : initial;
         return `
         <div class="glass-card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" data-id="${t.id}" onclick="playSingle('${t.id}')">
-          <div class="single-cover">${initial}<span class="single-badge">SINGLE</span></div>
+          <div class="single-cover">${cover}<span class="single-badge">SINGLE</span></div>
           <div class="flex-1 min-w-0">
             <div class="track-title">${t.titre}</div>
             <div class="track-sub">${t.artiste}</div>
