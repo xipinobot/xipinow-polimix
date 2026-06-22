@@ -772,20 +772,22 @@ async function boot(){
    RENDU
    ════════════════════════════════════════════════════════════ */
 function fmt(sec){ sec=Math.floor(sec||0); const m=Math.floor(sec/60), s=sec%60; return m+':'+String(s).padStart(2,'0'); }
+// Échappe le texte avant insertion en HTML (évite tout souci d'affichage / injection)
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 function renderAlbum(album){
     const desc = (state.descriptions.albums?.[album.id]?.description)||'';
     $('album-header').innerHTML = `
       <div class="flex flex-col sm:flex-row gap-6 items-start">
         <div class="album-cover w-44 h-44 sm:w-52 sm:h-52">
-          <img src="${album.pochette}" alt="${album.album}">
+          <img src="${esc(album.pochette)}" alt="${esc(album.album)}">
         </div>
         <div class="flex-1 min-w-0 pt-1">
-          <p class="text-[11px] tracking-widest uppercase" style="color:var(--accent-hi);">Album · ${album.annee||''} · ${album.genre||''}</p>
-          <h2 class="section-title text-5xl md:text-6xl tracking-wider text-white leading-none mt-1">${album.album}</h2>
-          <p class="text-zinc-400 text-sm mt-2">${album.artiste_album||''}</p>
+          <p class="text-[11px] tracking-widest uppercase" style="color:var(--accent-hi);">Album · ${esc(album.annee||'')} · ${esc(album.genre||'')}</p>
+          <h2 class="section-title text-5xl md:text-6xl tracking-wider text-white leading-none mt-1">${esc(album.album)}</h2>
+          <p class="text-zinc-400 text-sm mt-2">${esc(album.artiste_album||'')}</p>
           <p class="text-zinc-600 text-xs mt-1">${album.trackIds.length} morceau${album.trackIds.length>1?'x':''}</p>
-          ${desc ? `<p class="text-zinc-400 text-sm mt-4 leading-relaxed max-w-2xl">${desc}</p>` : ''}
+          ${desc ? `<p class="text-zinc-400 text-sm mt-4 leading-relaxed max-w-2xl">${esc(desc)}</p>` : ''}
           <div class="mt-5 flex gap-3">
             <button onclick="playFirst()" class="px-6 py-2.5 rounded-full font-semibold text-sm transition flex items-center gap-2"
                     style="background:linear-gradient(90deg,var(--accent),var(--accent-hi)); color:white;">
@@ -813,14 +815,14 @@ function renderSingles(){
         const t=state.byId[id];
         const initial=(t.titre||'?').trim().charAt(0).toUpperCase();
         const cover = t.pochette
-            ? `<img src="${t.pochette}" alt="${t.titre}" class="single-cover-img">`
+            ? `<img src="${esc(t.pochette)}" alt="${esc(t.titre)}" class="single-cover-img">`
             : initial;
         return `
         <div class="glass-card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" data-id="${t.id}" onclick="playSingle('${t.id}')">
           <div class="single-cover">${cover}<span class="single-badge">SINGLE</span></div>
           <div class="flex-1 min-w-0">
-            <div class="track-title">${t.titre}</div>
-            <div class="track-sub">${t.artiste}</div>
+            <div class="track-title">${esc(t.titre)}</div>
+            <div class="track-sub">${esc(t.artiste)}</div>
             <div class="flex items-center gap-3 mt-2 text-[11px]" style="color:#71717a;">
               <span><i class="fa-solid fa-clock"></i> ${fmt(t.duree)}</span>
               <span class="play-stat"><i class="fa-solid fa-headphones"></i><span class="play-count" data-id="${t.id}">${fmtNum(plays[t.id])}</span></span>
@@ -858,14 +860,14 @@ function renderArtists(){
     $('artist-grid').innerHTML = state.artistes.map(a=>{
         const d = state.descriptions.artistes?.[a.nom]?.description || '';
         const initial = (a.nom||'?').trim().charAt(0).toUpperCase();
-        const esc = a.nom.replace(/'/g,"\\'");
+        const escId = a.nom.replace(/'/g,"\\'");
         return `
-        <div class="glass-card rounded-2xl p-5 flex gap-4 items-start cursor-pointer" onclick="focusArtist('${esc}')">
-          <div class="artist-avatar">${initial}</div>
+        <div class="glass-card rounded-2xl p-5 flex gap-4 items-start cursor-pointer" onclick="focusArtist('${escId}')">
+          <div class="artist-avatar">${esc(initial)}</div>
           <div class="min-w-0">
-            <h4 class="font-bold text-white text-lg leading-tight">${a.nom}</h4>
+            <h4 class="font-bold text-white text-lg leading-tight">${esc(a.nom)}</h4>
             <p class="text-[11px] uppercase tracking-wider" style="color:var(--accent-hi);">${a.ids.length} morceau${a.ids.length>1?'x':''}</p>
-            ${d ? `<p class="text-zinc-400 text-xs mt-2 leading-relaxed">${d}</p>` : `<p class="text-zinc-600 text-xs mt-2 italic">Présentation à venir.</p>`}
+            ${d ? `<p class="text-zinc-400 text-xs mt-2 leading-relaxed">${esc(d)}</p>` : `<p class="text-zinc-600 text-xs mt-2 italic">Présentation à venir.</p>`}
           </div>
         </div>`;
     }).join('');
@@ -876,13 +878,13 @@ function trackRowHTML(t, queueExpr){
     return `
       <div class="track-row" data-id="${t.id}" onclick="${queueExpr}">
         <div class="track-num">
-          <span class="num">${t.num}</span>
+          <span class="num">${t.num||'<i class=\'fa-solid fa-music\' style=\'opacity:.5;font-size:10px;\'></i>'}</span>
           <i class="fa-solid fa-play play-ic"></i>
           <div class="track-eq"><span class="b"></span><span class="b"></span><span class="b"></span></div>
         </div>
         <div class="track-main">
-          <div class="track-title">${t.titre}</div>
-          <div class="track-sub">${t.artiste}</div>
+          <div class="track-title">${esc(t.titre)}</div>
+          <div class="track-sub">${esc(t.artiste)}</div>
         </div>
         <span class="play-stat" title="Lectures"><i class="fa-solid fa-headphones"></i><span class="play-count" data-id="${t.id}">${fmtNum(plays[t.id])}</span></span>
         <div class="track-dur">${fmt(t.duree)}</div>
@@ -894,19 +896,19 @@ function trackRowHTML(t, queueExpr){
 
 function focusArtist(nom){
     const ids = state.artistesMap[nom]||[];
-    const esc = nom.replace(/'/g,"\\'");
+    const escId = nom.replace(/'/g,"\\'");
     const rows = ids.map(id=>state.byId[id])
-        .map(t=>trackRowHTML(t, `playArtist('${esc}','${t.id}')`)).join('');
+        .map(t=>trackRowHTML(t, `playArtist('${escId}','${t.id}')`)).join('');
     $('artist-focus').innerHTML = `
       <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="artist-avatar" style="width:48px;height:48px;font-size:1.3rem;">${nom.charAt(0).toUpperCase()}</div>
+          <div class="artist-avatar" style="width:48px;height:48px;font-size:1.3rem;">${esc(nom.charAt(0).toUpperCase())}</div>
           <div>
-            <h4 class="font-bebas text-2xl tracking-wider text-white leading-none">${nom}</h4>
+            <h4 class="font-bebas text-2xl tracking-wider text-white leading-none">${esc(nom)}</h4>
             <p class="text-zinc-500 text-xs mt-0.5">${ids.length} morceau${ids.length>1?'x':''}</p>
           </div>
         </div>
-        <button onclick="playArtist('${esc}')" class="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"
+        <button onclick="playArtist('${escId}')" class="px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"
                 style="background:linear-gradient(90deg,var(--accent),var(--accent-hi)); color:white;">
           <i class="fa-solid fa-play"></i> Tout écouter
         </button>
@@ -930,8 +932,8 @@ function renderRanking(){
       <div class="rank-row" onclick="playTrackById('${t.id}', state.order)" style="cursor:pointer;">
         <div class="rank-pos">${i+1}</div>
         <div class="flex-1 min-w-0">
-          <div class="track-title">${t.titre}</div>
-          <div class="track-sub">${t.artiste}</div>
+          <div class="track-title">${esc(t.titre)}</div>
+          <div class="track-sub">${esc(t.artiste)}</div>
         </div>
         <div class="flex items-center gap-1.5 text-sm" style="color:#9ca3af;" title="Lectures">
           <i class="fa-solid fa-headphones text-xs"></i><span style="font-variant-numeric:tabular-nums;">${fmtNum(plays[t.id])}</span>
