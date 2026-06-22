@@ -352,6 +352,7 @@
     <nav class="flex-1 px-3 space-y-1 mt-3">
         <a href="#top"         class="nav-item active"><i class="fa-solid fa-house w-4 text-center"></i>Accueil</a>
         <a href="#album"       class="nav-item"><i class="fa-solid fa-compact-disc w-4 text-center"></i>Album</a>
+        <a href="#tous"        class="nav-item"><i class="fa-solid fa-music w-4 text-center"></i>Tous les morceaux</a>
         <a href="#artistes"    class="nav-item"><i class="fa-solid fa-users w-4 text-center"></i>Artistes</a>
         <a href="#classement"  class="nav-item"><i class="fa-solid fa-ranking-star w-4 text-center"></i>Classement</a>
     </nav>
@@ -430,6 +431,29 @@
             <div id="track-list" class="mt-6 space-y-0.5">
                 <div class="text-zinc-600 text-sm py-10 text-center">Chargement des morceaux…</div>
             </div>
+        </section>
+
+        <!-- TOUS LES MORCEAUX -->
+        <section id="tous" class="scroll-mt-6">
+            <div class="flex items-end justify-between mb-5 flex-wrap gap-3">
+                <div>
+                    <h3 class="section-title text-3xl tracking-wider text-white">Tous les morceaux</h3>
+                    <p class="text-zinc-500 text-xs mt-1">Le catalogue complet, tous albums confondus</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="sort-all" class="text-xs text-zinc-500">Trier&nbsp;:</label>
+                    <select id="sort-all" onchange="renderAllTracks()"
+                            class="text-sm rounded-lg px-3 py-1.5 outline-none cursor-pointer"
+                            style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:#e4e4e7;">
+                        <option value="ajout">Ordre d'ajout</option>
+                        <option value="titre">Titre (A→Z)</option>
+                        <option value="duree">Durée</option>
+                        <option value="likes">Les plus aimés</option>
+                        <option value="plays">Les plus écoutés</option>
+                    </select>
+                </div>
+            </div>
+            <div id="all-tracks" class="space-y-0.5"></div>
         </section>
 
         <!-- ARTISTES -->
@@ -583,14 +607,19 @@ function toggleLike(id){
     if(mine[id]){ delete mine[id]; statsCache.likes[id]=Math.max(0,(statsCache.likes[id]||1)-1); sendStat('/unlike', id); }
     else { mine[id]=1; statsCache.likes[id]=(statsCache.likes[id]||0)+1; sendStat('/like', id); }
     saveMine(mine);
-    refreshStatsUI(); renderRanking();
+    refreshStatsUI(); renderRanking(); resortAllIfNeeded();
 }
 function likeCurrent(){ if(currentId) toggleLike(currentId); }
 
 // Une lecture comptée une seule fois, après 30 s d'écoute réelle.
 function addPlay(id){
     statsCache.plays[id]=(statsCache.plays[id]||0)+1; sendStat('/play', id);
-    refreshStatsUI(); renderRanking();
+    refreshStatsUI(); renderRanking(); resortAllIfNeeded();
+}
+// Reconstruit "Tous les morceaux" seulement si son tri dépend des stats
+function resortAllIfNeeded(){
+    const m=$('sort-all')?.value;
+    if(m==='likes'||m==='plays') renderAllTracks();
 }
 
 // Formate les grands nombres : 1234 -> 1,2 k
@@ -677,6 +706,7 @@ async function boot(){
         }
         buildArtists();
         renderAlbum(state.albums[0]);
+        renderAllTracks();
         renderArtists();
         renderRanking();
         renderTicker();
@@ -722,6 +752,24 @@ function renderAlbum(album){
     $('track-list').innerHTML = state.tracks
         .map(t=>trackRowHTML(t, `playTrackById('${t.id}', state.order)`)).join('');
 }
+
+// Liste complète, tous albums confondus, avec tri choisi par l'utilisateur
+function renderAllTracks(){
+    const cont=$('all-tracks'); if(!cont) return;
+    const mode = $('sort-all')?.value || 'ajout';
+    const counts=getCounts(), plays=getPlays();
+    let list=[...state.tracks];
+    if(mode==='titre')      list.sort((a,b)=>a.titre.localeCompare(b.titre,'fr',{sensitivity:'base'}));
+    else if(mode==='duree') list.sort((a,b)=>(b.duree||0)-(a.duree||0));
+    else if(mode==='likes') list.sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)||(plays[b.id]||0)-(plays[a.id]||0));
+    else if(mode==='plays') list.sort((a,b)=>(plays[b.id]||0)-(plays[a.id]||0));
+    // 'ajout' = ordre naturel de state.tracks
+    state.allOrder = list.map(t=>t.id);
+    cont.innerHTML = list.map(t=>trackRowHTML(t, `playFromAll('${t.id}')`)).join('');
+    markPlayingRow(); refreshStatsUI();
+}
+// Joue un morceau dans la file "Tous les morceaux" (ordre de tri courant)
+function playFromAll(id){ playTrackById(id, state.allOrder||state.order); }
 
 function renderArtists(){
     $('artist-grid').innerHTML = state.artistes.map(a=>{
